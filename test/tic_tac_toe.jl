@@ -28,3 +28,27 @@ using ReinforcementLearning
 @test win_state(TicTacToe([1,2,1,
                            1,1,2,
                            2,1,2])) == 3
+
+wins  = 0
+draws = 0
+num_samples = 1000
+for i=1:num_samples
+   winner = play_tic_tac_toe_random_first_move(random_player, random_player)
+   wins  += winner==1 ? 1 : 0
+   draws += winner==3 ? 1 : 0
+end
+win_percentage = wins / num_samples * 100
+draw_percentage = draws / num_samples * 100
+println("Random vs random win: ", @sprintf("%0.2f", win_percentage), "%, draws: ", @sprintf("%0.2f", draw_percentage), "%")
+
+wins  = 0
+draws = 0
+num_samples = 1000
+for i=1:num_samples
+   winner = play_tic_tac_toe_random_first_move(center_player, random_player)
+   wins  += winner==1 ? 1 : 0
+   draws += winner==3 ? 1 : 0
+end
+win_percentage = wins / num_samples * 100
+draw_percentage = draws / num_samples * 100
+println("Center vs random win: ", @sprintf("%0.2f", win_percentage), "%, draws: ", @sprintf("%0.2f", draw_percentage), "%")
