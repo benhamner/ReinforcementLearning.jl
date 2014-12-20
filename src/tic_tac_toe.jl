@@ -29,14 +29,14 @@ function win_state(game::TicTacToe)
 end
 
 possible_moves(game::TicTacToe) = find(game.board.==0)
-random_player(game::TicTacToe) = rand(possible_moves(game))
-center_player(game::TicTacToe) = game.board[5]==0 ? 5 : random_player(game)
+random_player(game::TicTacToe, player::Int) = rand(possible_moves(game))
+center_player(game::TicTacToe, player::Int) = game.board[5]==0 ? 5 : random_player(game, player)
 
 function play_tic_tac_toe(player_1::Function, player_2::Function)
     game = initialize_tic_tac_toe()
     turn = 1
     while win_state(game)==0
-        move = turn==1 ? player_1(game) : player_2(game)
+        move = turn==1 ? player_1(game, turn) : player_2(game, turn)
         if game.board[move]==0
             game.board[move] = turn
         else
