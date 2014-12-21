@@ -31,7 +31,7 @@ using ReinforcementLearning
 
 wins  = 0
 draws = 0
-num_samples = 1000
+num_samples = 10_000
 for i=1:num_samples
    winner = play_tic_tac_toe_random_first_move(random_player, random_player)
    wins  += winner==1 ? 1 : 0
@@ -39,11 +39,18 @@ for i=1:num_samples
 end
 win_percentage = wins / num_samples * 100
 draw_percentage = draws / num_samples * 100
-println("Random vs random win: ", @sprintf("%0.2f", win_percentage), "%, draws: ", @sprintf("%0.2f", draw_percentage), "%")
+loss_percentage = 100 - win_percentage - draw_percentage
+@test draw_percentage < 20.0
+@test draw_percentage > 5.0
+@test win_percentage*100/(win_percentage+loss_percentage) > 47.0
+@test win_percentage*100/(win_percentage+loss_percentage) < 53.0
+println("Random vs random win: ", @sprintf("%0.2f", win_percentage),
+        "%, losses: ", @sprintf("%0.2f", loss_percentage), "%",
+        "%, draws: ",  @sprintf("%0.2f", draw_percentage), "%")
 
 wins  = 0
 draws = 0
-num_samples = 1000
+num_samples = 10_000
 for i=1:num_samples
    winner = play_tic_tac_toe_random_first_move(center_player, random_player)
    wins  += winner==1 ? 1 : 0
@@ -51,4 +58,8 @@ for i=1:num_samples
 end
 win_percentage = wins / num_samples * 100
 draw_percentage = draws / num_samples * 100
-println("Center vs random win: ", @sprintf("%0.2f", win_percentage), "%, draws: ", @sprintf("%0.2f", draw_percentage), "%")
+loss_percentage = 100 - win_percentage - draw_percentage
+@test win_percentage*100/(win_percentage+loss_percentage) > 55.0
+println("Random vs random win: ", @sprintf("%0.2f", win_percentage),
+        "%, losses: ", @sprintf("%0.2f", loss_percentage), "%",
+        "%, draws: ",  @sprintf("%0.2f", draw_percentage), "%")
