@@ -54,3 +54,18 @@ function play_tic_tac_toe_random_first_move(player_1::Function, player_2::Functi
     res = play_tic_tac_toe(player_2, player_1)
     res < 3 ? 3-res : res
 end
+
+function evaluate_tic_tac_toe_players(player_1::Function, player_2::Function, num_samples::Int)
+    wins  = 0
+    draws = 0
+    for i=1:num_samples
+       winner = play_tic_tac_toe_random_first_move(random_player, random_player)
+       wins  += winner==1 ? 1 : 0
+       draws += winner==3 ? 1 : 0
+    end
+    win_percentage = wins / num_samples * 100
+    draw_percentage = draws / num_samples * 100
+    loss_percentage = 100 - win_percentage - draw_percentage
+    win_percentage, draw_percentage, loss_percentage
+end
+
