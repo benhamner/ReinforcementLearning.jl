@@ -2,6 +2,7 @@
 type TicTacToe <: Game
     board::Vector{Int}
 end
+#Base.hash(game::TicTacToe) = hash(game.board)
 
 initialize_tic_tac_toe() = TicTacToe(zeros(Int, 9))
 
@@ -47,6 +48,23 @@ function play_tic_tac_toe(player_1::Function, player_2::Function)
     win_state(game)
 end
 
+function play_tic_tac_toe_track_state(player_1::Function, player_2::Function)
+    game = initialize_tic_tac_toe()
+    states = Array((Vector{Int}, Int, Int), 0) # state, turn, move
+    turn = 1
+    while win_state(game)==0
+        move = turn==1 ? player_1(game, turn) : player_2(game, turn)
+        push!(states, (copy(game.board), turn, move))
+        if game.board[move]==0
+            game.board[move] = turn
+        else
+            throw("Error: Invalid Move: " * string(move) * " on board: " * string(game.board))
+        end
+        turn = 3 - turn # alternates between 1 and 2
+    end
+    states, win_state(game)
+end
+
 function play_tic_tac_toe_random_first_move(player_1::Function, player_2::Function)
     if rand(1:2)==1
         return play_tic_tac_toe(player_1, player_2)
@@ -69,3 +87,38 @@ function evaluate_tic_tac_toe_players(player_1::Function, player_2::Function, nu
     win_percentage, draw_percentage, loss_percentage
 end
 
+function make_q_player(q_table::Dict{(Vector{Int64},Int,Int), Float64})
+    function q_player(game::TicTacToe, player::Int)
+        max_score = -Inf
+        best_move = -1
+        for move=possible_moves(game)
+            if haskey(q_table, (game.board, player, move))
+                if q_table[(game.board, player, move)]>max_score
+                    max_score = q_table[(game.board, player, move)]
+                    best_move = move
+                end
+            end
+        end
+        if best_move > -1
+            return best_move
+        end
+        return random_player(game, player)
+    end
+end
+
+function train_q_learning_player()
+    q_table = Dict{(Vector{Int},Int,Int), Float64}()
+    alpha = 0.1
+    num_games = 30_000
+    for i=1:num_games
+        states, win_state = play_tic_tac_toe_track_state(random_player, random_player)
+        for state = states
+            reward = win_state==3 ? 0 : (win_state==state[2] ? 1 : -1)
+            if !haskey(q_table, state)
+                q_table[state] = 0.0
+            end
+            q_table[state] = (1-alpha)*q_table[state] + alpha*reward
+        end
+    end
+    q_table, make_q_player(q_table)
+end

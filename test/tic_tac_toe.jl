@@ -42,6 +42,15 @@ println("Random vs random win: ", @sprintf("%0.2f", win_percentage),
 
 win_percentage, draw_percentage, loss_percentage = evaluate_tic_tac_toe_players(center_player, random_player, 10_000)
 @test win_percentage*100/(win_percentage+loss_percentage) > 55.0
-println("Random vs random win: ", @sprintf("%0.2f", win_percentage),
+println("Center vs random win: ", @sprintf("%0.2f", win_percentage),
+        "%, losses: ", @sprintf("%0.2f", loss_percentage), "%",
+        "%, draws: ",  @sprintf("%0.2f", draw_percentage), "%")
+
+q_table, q_player = train_q_learning_player()
+win_percentage, draw_percentage, loss_percentage = evaluate_tic_tac_toe_players(q_player, random_player, 10_000)
+@test draw_percentage < 20.0
+@test draw_percentage > 5.0
+@test win_percentage*100/(win_percentage+loss_percentage) > 75.0
+println("Q player vs random win: ", @sprintf("%0.2f", win_percentage),
         "%, losses: ", @sprintf("%0.2f", loss_percentage), "%",
         "%, draws: ",  @sprintf("%0.2f", draw_percentage), "%")
