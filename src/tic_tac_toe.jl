@@ -59,7 +59,7 @@ function evaluate_tic_tac_toe_players(player_1::Function, player_2::Function, nu
     wins  = 0
     draws = 0
     for i=1:num_samples
-       winner = play_tic_tac_toe_random_first_move(random_player, random_player)
+       winner = play_tic_tac_toe_random_first_move(player_1, player_2)
        wins  += winner==1 ? 1 : 0
        draws += winner==3 ? 1 : 0
     end
