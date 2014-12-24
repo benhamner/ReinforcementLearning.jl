@@ -106,12 +106,20 @@ function make_q_player(q_table::Dict{(Vector{Int64},Int,Int), Float64})
     end
 end
 
+function make_exploration_player(this_player, rate = 0.1)
+    function exploration_player(game::TicTacToe, player::Int)
+        rand()<rate ? random_player(game, player) : this_player(game, player)
+    end
+end
+
 function train_q_learning_player()
     q_table = Dict{(Vector{Int},Int,Int), Float64}()
+    q_player = make_q_player(q_table)
+    exploration_player = make_exploration_player(q_player)
     alpha = 0.1
     num_games = 30_000
     for i=1:num_games
-        states, win_state = play_tic_tac_toe_track_state(random_player, random_player)
+        states, win_state = play_tic_tac_toe_track_state(exploration_player, exploration_player)
         for state = states
             reward = win_state==3 ? 0 : (win_state==state[2] ? 1 : -1)
             if !haskey(q_table, state)
@@ -120,5 +128,15 @@ function train_q_learning_player()
             q_table[state] = (1-alpha)*q_table[state] + alpha*reward
         end
     end
-    q_table, make_q_player(q_table)
+    q_table, q_player
+end
+
+int_to_string(x::Int) = x==0 ? "-" : (x==1 ? "X" : "O")
+board_to_string(game::TicTacToe) = join([join([int_to_string(x) for x=game.board[i:i+2]], "") for i=1:3:9], "\n")
+
+function command_player(game::TicTacToe, player::Int)
+    println(board_to_string(game))
+    println("You are player ", int_to_string(player))
+    input = readline(STDIN)
+    int(input)
 end
