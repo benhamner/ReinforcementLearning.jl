@@ -1,6 +1,6 @@
 module ReinforcementLearning
-    # using
-        # nothing at the moment
+    using
+        DataStructures
 
     export
         center_player,

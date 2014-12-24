@@ -87,7 +87,7 @@ function evaluate_tic_tac_toe_players(player_1::Function, player_2::Function, nu
     win_percentage, draw_percentage, loss_percentage
 end
 
-function make_q_player(q_table::Dict{(Vector{Int64},Int,Int), Float64})
+function make_q_player(q_table::DefaultDict{(Vector{Int64},Int,Int), Float64})
     function q_player(game::TicTacToe, player::Int)
         max_score = -Inf
         best_move = -1
@@ -113,7 +113,7 @@ function make_exploration_player(this_player, rate = 0.1)
 end
 
 function train_q_learning_player()
-    q_table = Dict{(Vector{Int},Int,Int), Float64}()
+    q_table = DefaultDict((Vector{Int},Int,Int), Float64, 0.0)
     q_player = make_q_player(q_table)
     exploration_player = make_exploration_player(q_player)
     alpha = 0.1
@@ -122,9 +122,6 @@ function train_q_learning_player()
         states, win_state = play_tic_tac_toe_track_state(exploration_player, exploration_player)
         for state = states
             reward = win_state==3 ? 0 : (win_state==state[2] ? 1 : -1)
-            if !haskey(q_table, state)
-                q_table[state] = 0.0
-            end
             q_table[state] = (1-alpha)*q_table[state] + alpha*reward
         end
     end
