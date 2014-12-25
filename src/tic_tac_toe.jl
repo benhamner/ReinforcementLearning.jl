@@ -117,7 +117,7 @@ function train_q_learning_player()
     q_player = make_q_player(q_table)
     exploration_player = make_exploration_player(q_player)
     alpha = 0.1
-    num_games = 10_000
+    num_games = 50_000
     for i=1:num_games
         states, win_state = play_tic_tac_toe_track_state(exploration_player, exploration_player)
         
