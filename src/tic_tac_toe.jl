@@ -117,7 +117,7 @@ function train_q_learning_player()
     q_player = make_q_player(q_table)
     exploration_player = make_exploration_player(q_player)
     alpha = 0.1
-    num_games = 50_000
+    num_games = 10_000
     for i=1:num_games
         states, win_state = play_tic_tac_toe_track_state(exploration_player, exploration_player)
         
@@ -142,8 +142,8 @@ function train_q_learning_player()
     q_table, q_player
 end
 
-int_to_string(x::Int) = x==0 ? "-" : (x==1 ? "X" : "O")
-board_to_string(game::TicTacToe) = join([join([int_to_string(x) for x=game.board[i:i+2]], "") for i=1:3:9], "\n")
+int_to_string(x::Int) = x==0 ? " " : (x==1 ? "X" : "O")
+board_to_string(game::TicTacToe) = join([join([int_to_string(x) for x=game.board[i:i+2]], "|") for i=1:3:9], "\n-----\n")
 
 function command_player(game::TicTacToe, player::Int)
     println(board_to_string(game))
