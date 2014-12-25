@@ -112,6 +112,15 @@ function make_exploration_player(this_player, rate = 0.5)
     end
 end
 
+function learn_from_states!(q_table::DefaultDict{(Vector{Int64},Int,Int), Float64}, alpha, states, win_state, player)
+    reward = win_state==3 ? 0 : (win_state==player ? 1 : -1)
+    for i=1:length(states)-1
+        max_q = maximum([q_table[(states[i+1][1],states[i][2], m)] for m=possible_moves(TicTacToe(states[i+1][1]))])
+        q_table[states[i]] = (1-alpha)*q_table[states[i]] + alpha*max_q
+    end
+    q_table[states[end]] = (1-alpha)*q_table[states[end]]+alpha*reward
+end
+
 function train_q_learning_player()
     q_table = DefaultDict((Vector{Int},Int,Int), Float64, 0.0)
     q_player = make_q_player(q_table)
@@ -122,22 +131,10 @@ function train_q_learning_player()
         states, win_state = play_tic_tac_toe_track_state(exploration_player, exploration_player)
         
         # Learn from player 1
-        reward = win_state==3 ? 0 : (win_state==1 ? 1 : -1)
-        for i=1:2:length(states)-2            
-            max_q = maximum([q_table[(states[i+2][1],states[i][2], m)] for m=possible_moves(TicTacToe(states[i+2][1]))])
-            q_table[states[i]] = (1-alpha)*q_table[states[i]] + alpha*max_q
-        end
-        i_last = maximum(1:2:length(states))
-        q_table[states[i_last]] = (1-alpha)*q_table[states[i_last]]+alpha*reward
+        learn_from_states!(q_table, alpha, states[1:2:end], win_state, 1)
 
         # Learn from player 2
-        reward = win_state==3 ? 0 : (win_state==2 ? 1 : -1)
-        for i=2:2:length(states)-2            
-            max_q = maximum([q_table[(states[i+2][1],states[i][2], m)] for m=possible_moves(TicTacToe(states[i+2][1]))])
-            q_table[states[i]] = (1-alpha)*q_table[states[i]] + alpha*max_q
-        end
-        i_last = maximum(2:2:length(states))
-        q_table[states[i_last]] = (1-alpha)*q_table[states[i_last]]+alpha*reward
+        learn_from_states!(q_table, alpha, states[2:2:end], win_state, 2)
     end
     q_table, q_player
 end
