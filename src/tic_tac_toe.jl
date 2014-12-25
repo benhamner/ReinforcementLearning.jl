@@ -120,10 +120,24 @@ function train_q_learning_player()
     num_games = 30_000
     for i=1:num_games
         states, win_state = play_tic_tac_toe_track_state(exploration_player, exploration_player)
-        for state = states
-            reward = win_state==3 ? 0 : (win_state==state[2] ? 1 : -1)
-            q_table[state] = (1-alpha)*q_table[state] + alpha*reward
+        
+        # Learn from player 1
+        reward = win_state==3 ? 0 : (win_state==1 ? 1 : -1)
+        for i=1:2:length(states)-2            
+            max_q = maximum([q_table[(states[i+2][1],states[i][2], m)] for m=possible_moves(TicTacToe(states[i+2][1]))])
+            q_table[states[i]] = (1-alpha)*q_table[states[i]] + alpha*max_q
         end
+        i_last = maximum(1:2:length(states))
+        q_table[states[i_last]] = (1-alpha)*q_table[states[i_last]]+alpha*reward
+
+        # Learn from player 2
+        reward = win_state==3 ? 0 : (win_state==2 ? 1 : -1)
+        for i=2:2:length(states)-2            
+            max_q = maximum([q_table[(states[i+2][1],states[i][2], m)] for m=possible_moves(TicTacToe(states[i+2][1]))])
+            q_table[states[i]] = (1-alpha)*q_table[states[i]] + alpha*max_q
+        end
+        i_last = maximum(2:2:length(states))
+        q_table[states[i_last]] = (1-alpha)*q_table[states[i_last]]+alpha*reward
     end
     q_table, q_player
 end
