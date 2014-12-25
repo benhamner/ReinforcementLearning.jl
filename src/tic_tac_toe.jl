@@ -106,7 +106,7 @@ function make_q_player(q_table::DefaultDict{(Vector{Int64},Int,Int), Float64})
     end
 end
 
-function make_exploration_player(this_player, rate = 0.1)
+function make_exploration_player(this_player, rate = 0.5)
     function exploration_player(game::TicTacToe, player::Int)
         rand()<rate ? random_player(game, player) : this_player(game, player)
     end
@@ -117,7 +117,7 @@ function train_q_learning_player()
     q_player = make_q_player(q_table)
     exploration_player = make_exploration_player(q_player)
     alpha = 0.1
-    num_games = 30_000
+    num_games = 10_000
     for i=1:num_games
         states, win_state = play_tic_tac_toe_track_state(exploration_player, exploration_player)
         

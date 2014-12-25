@@ -52,3 +52,8 @@ win_percentage, draw_percentage, loss_percentage = evaluate_tic_tac_toe_players(
 println("Q player vs random win: ", @sprintf("%0.2f", win_percentage),
         "%, losses: ", @sprintf("%0.2f", loss_percentage), "%",
         "%, draws: ",  @sprintf("%0.2f", draw_percentage), "%")
+
+opening = [q_table[(Int[0,0,0,0,0,0,0,0,0], 1, m)] for m=1:9]
+for i=1:9
+   println("Move ", i, ": ", @sprintf("%0.4f", opening[i]))
+end
