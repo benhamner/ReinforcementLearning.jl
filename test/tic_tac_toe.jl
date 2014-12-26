@@ -31,39 +31,29 @@ using ReinforcementLearning
 
 
 
-win_percentage, draw_percentage, loss_percentage = evaluate_tic_tac_toe_players(random_player, random_player, 10_000)
+win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac_toe_players(random_player, random_player, 10_000)
 @test draw_percentage < 20.0
 @test draw_percentage > 5.0
 @test win_percentage*100/(win_percentage+loss_percentage) > 47.0
 @test win_percentage*100/(win_percentage+loss_percentage) < 53.0
-println("Random vs random win: ", @sprintf("%0.2f", win_percentage),
-        "%, losses: ", @sprintf("%0.2f", loss_percentage),
-        "%, draws: ",  @sprintf("%0.2f", draw_percentage), "%")
+println("Random vs random: ", results_txt)
 
-win_percentage, draw_percentage, loss_percentage = evaluate_tic_tac_toe_players(center_player, random_player, 10_000)
+win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac_toe_players(center_player, random_player, 10_000)
 @test win_percentage*100/(win_percentage+loss_percentage) > 55.0
-println("Center vs random win: ", @sprintf("%0.2f", win_percentage),
-        "%, losses: ", @sprintf("%0.2f", loss_percentage),
-        "%, draws: ",  @sprintf("%0.2f", draw_percentage), "%")
+println("Center vs random: ", results_txt)
 
-win_percentage, draw_percentage, loss_percentage = evaluate_tic_tac_toe_players(perfect_player, random_player, 10_000)
+win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac_toe_players(perfect_player, random_player, 10_000)
 @test win_percentage*100/(win_percentage+loss_percentage) > 55.0
-println("Perfct vs random win: ", @sprintf("%0.2f", win_percentage),
-        "%, losses: ", @sprintf("%0.2f", loss_percentage),
-        "%, draws: ",  @sprintf("%0.2f", draw_percentage), "%")
+println("Perfct vs random: ", results_txt)
 
 q_table, q_player = train_q_learning_player()
-win_percentage, draw_percentage, loss_percentage = evaluate_tic_tac_toe_players(q_player, random_player, 10_000)
+win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac_toe_players(q_player, random_player, 10_000)
 @test win_percentage*100/(win_percentage+loss_percentage) > 75.0
-println("Q player vs random win: ", @sprintf("%0.2f", win_percentage),
-        "%, losses: ", @sprintf("%0.2f", loss_percentage),
-        "%, draws: ",  @sprintf("%0.2f", draw_percentage), "%")
+println("Q player vs random: ", results_txt)
 
-win_percentage, draw_percentage, loss_percentage = evaluate_tic_tac_toe_players(q_player, perfect_player, 10_000)
-#@test win_percentage*100/(win_percentage+loss_percentage) > 75.0
-println("Q player vs perfect win: ", @sprintf("%0.2f", win_percentage),
-        "%, losses: ", @sprintf("%0.2f", loss_percentage),
-        "%, draws: ",  @sprintf("%0.2f", draw_percentage), "%")
+win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac_toe_players(q_player, perfect_player, 10_000)
+@test draw_percentage > 50.0
+println("Q player vs perfect: ", results_txt)
 
 opening = [q_table[(Int[0,0,0,0,0,0,0,0,0], 1, m)] for m=1:9]
 for i=1:9

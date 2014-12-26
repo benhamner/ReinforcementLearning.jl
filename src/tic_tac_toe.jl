@@ -83,8 +83,9 @@ function evaluate_tic_tac_toe_players(player_1::Function, player_2::Function, nu
     end
     win_percentage = wins / num_samples * 100
     draw_percentage = draws / num_samples * 100
-    loss_percentage = 100 - win_percentage - draw_percentage
-    win_percentage, draw_percentage, loss_percentage
+    loss_percentage = (num_samples-wins-draws) / num_samples * 100
+    results_text = @sprintf("%0.2f wins, %0.2f losses, %0.2f draws", win_percentage, loss_percentage, draw_percentage)
+    win_percentage, draw_percentage, loss_percentage, results_text
 end
 
 board_positions = Dict{(Vector{Int}, Int), (Int, Vector{Int})}()
