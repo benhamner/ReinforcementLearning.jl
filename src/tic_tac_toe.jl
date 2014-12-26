@@ -87,24 +87,40 @@ function evaluate_tic_tac_toe_players(player_1::Function, player_2::Function, nu
     win_percentage, draw_percentage, loss_percentage
 end
 
+board_positions = Dict{(Vector{Int}, Int), (Int, Vector{Int})}()
 function evaluate_board(game::TicTacToe, player::Int)
-    if win_state(game)>0
-        return win_state(game)
+    if haskey(board_positions, (game.board, player)) 
+        return board_positions[(game.board, player)]
+    end
+    this_win_state = win_state(game)
+    if this_win_state>0
+        board_positions[(game.board, player)] = (this_win_state, Int[])
+        return board_positions[(game.board, player)]
     end
     states = Int[]
-    for m=possible_moves(game)
+    moves  = possible_moves(game)
+    for m=moves
         new_game = TicTacToe(copy(game.board))
         new_game.board[m] = player
-        board_state = evaluate_board(new_game, 3-player)
+        board_state = evaluate_board(new_game, 3-player)[1]
         push!(states, board_state)
     end
     if in(player, states)
-        return player
+        best_moves = moves[states.==player]
+        board_positions[(game.board, player)] = (player, best_moves)
     elseif in(3, states)
-        return 3
+        best_moves = moves[states.==3]
+        board_positions[(game.board, player)] = (3, best_moves)
     else
-        return 3-player
+        best_moves = moves[states.==3-player]
+        board_positions[(game.board, player)] = (3-player, best_moves)
     end
+    return board_positions[(game.board, player)]
+end
+
+function perfect_player(game::TicTacToe, player::Int)
+    best_moves, outcome = evaluate_board(game, player)
+    rand(best_moves)
 end
 
 function make_q_player(q_table::DefaultDict{(Vector{Int64},Int,Int), Float64})
