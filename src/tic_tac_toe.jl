@@ -87,6 +87,26 @@ function evaluate_tic_tac_toe_players(player_1::Function, player_2::Function, nu
     win_percentage, draw_percentage, loss_percentage
 end
 
+function evaluate_board(game::TicTacToe, player::Int)
+    if win_state(game)>0
+        return win_state(game)
+    end
+    states = Int[]
+    for m=possible_moves(game)
+        new_game = TicTacToe(copy(game.board))
+        new_game.board[m] = player
+        board_state = evaluate_board(new_game, 3-player)
+        push!(states, board_state)
+    end
+    if in(player, states)
+        return player
+    elseif in(3, states)
+        return 3
+    else
+        return 3-player
+    end
+end
+
 function make_q_player(q_table::DefaultDict{(Vector{Int64},Int,Int), Float64})
     function q_player(game::TicTacToe, player::Int)
         max_score = -Inf

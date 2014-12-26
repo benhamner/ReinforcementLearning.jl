@@ -5,6 +5,7 @@ module ReinforcementLearning
     export
         center_player,
         command_player,
+        evaluate_board,
         evaluate_tic_tac_toe_players,
         Game,
         initialize_tic_tac_toe,

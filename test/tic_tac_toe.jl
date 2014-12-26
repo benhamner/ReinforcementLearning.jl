@@ -57,3 +57,11 @@ opening = [q_table[(Int[0,0,0,0,0,0,0,0,0], 1, m)] for m=1:9]
 for i=1:9
    println("Move ", i, ": ", @sprintf("%0.4f", opening[i]))
 end
+
+@test evaluate_board(TicTacToe([0,1,1,0,2,2,0,0,0]), 1)==1
+@test evaluate_board(TicTacToe([0,1,1,0,2,2,0,0,0]), 2)==2
+@test evaluate_board(TicTacToe([0,1,1,0,0,2,0,0,0]), 1)==1
+@test evaluate_board(TicTacToe([0,1,0,0,0,2,0,0,0]), 1)==1
+@test evaluate_board(TicTacToe([0,1,0,0,0,0,0,0,0]), 1)==1
+@test evaluate_board(TicTacToe([0,0,0,0,0,0,0,0,0]), 1)==3
+@test evaluate_board(TicTacToe([1,0,0,0,1,0,1,2,2]), 2)==1
