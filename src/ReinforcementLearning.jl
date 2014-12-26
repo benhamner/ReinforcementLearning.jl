@@ -9,6 +9,7 @@ module ReinforcementLearning
         evaluate_tic_tac_toe_players,
         Game,
         initialize_tic_tac_toe,
+        perfect_player,
         play_tic_tac_toe,
         play_tic_tac_toe_random_first_move,
         possible_moves,

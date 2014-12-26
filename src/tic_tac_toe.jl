@@ -119,7 +119,7 @@ function evaluate_board(game::TicTacToe, player::Int)
 end
 
 function perfect_player(game::TicTacToe, player::Int)
-    best_moves, outcome = evaluate_board(game, player)
+    outcome, best_moves = evaluate_board(game, player)
     rand(best_moves)
 end
 
@@ -164,7 +164,9 @@ function train_q_learning_player()
     alpha = 0.1
     num_games = 10_000
     for i=1:num_games
-        states, win_state = play_tic_tac_toe_track_state(exploration_player, exploration_player)
+        player_1 = rand([q_player, random_player, perfect_player])
+        player_2 = rand([q_player, random_player, perfect_player])
+        states, win_state = play_tic_tac_toe_track_state(player_1, player_2)
         
         # Learn from player 1
         learn_from_states!(q_table, alpha, states[1:2:end], win_state, 1)
