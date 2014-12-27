@@ -1,8 +1,10 @@
 
-type TicTacToe <: Game
+immutable TicTacToe <: Game
     board::Vector{Int}
 end
-#Base.hash(game::TicTacToe) = hash(game.board)
+Base.hash(game::TicTacToe, h::UInt) = hash(game.board, h)
+Base.isequal(g1::TicTacToe, g2::TicTacToe) = isequal(g1.board, g2.board)
+==(g1::TicTacToe, g2::TicTacToe) = g1.board==g2.board
 
 initialize_tic_tac_toe() = TicTacToe(zeros(Int, 9))
 
@@ -50,11 +52,11 @@ end
 
 function play_tic_tac_toe_track_state(player_1::Function, player_2::Function)
     game = initialize_tic_tac_toe()
-    states = Array((Vector{Int}, Int, Int), 0) # state, turn, move
+    states = Array((TicTacToe, Int, Int), 0) # state, turn, move
     turn = 1
     while win_state(game)==0
         move = turn==1 ? player_1(game, turn) : player_2(game, turn)
-        push!(states, (copy(game.board), turn, move))
+        push!(states, (TicTacToe(copy(game.board)), turn, move))
         if game.board[move]==0
             game.board[move] = turn
         else
@@ -84,19 +86,19 @@ function evaluate_tic_tac_toe_players(player_1::Function, player_2::Function, nu
     win_percentage = wins / num_samples * 100
     draw_percentage = draws / num_samples * 100
     loss_percentage = (num_samples-wins-draws) / num_samples * 100
-    results_text = @sprintf("%0.2f wins, %0.2f losses, %0.2f draws", win_percentage, loss_percentage, draw_percentage)
+    results_text = @sprintf("%2.2f%% wins, %2.2f%% losses, %2.2f%% draws", win_percentage, loss_percentage, draw_percentage)
     win_percentage, draw_percentage, loss_percentage, results_text
 end
 
-board_positions = Dict{(Vector{Int}, Int), (Int, Vector{Int})}()
+board_positions = Dict{(TicTacToe, Int), (Int, Vector{Int})}()
 function evaluate_board(game::TicTacToe, player::Int)
-    if haskey(board_positions, (game.board, player)) 
-        return board_positions[(game.board, player)]
+    if haskey(board_positions, (game, player))
+        return board_positions[(game, player)]
     end
     this_win_state = win_state(game)
     if this_win_state>0
-        board_positions[(game.board, player)] = (this_win_state, Int[])
-        return board_positions[(game.board, player)]
+        board_positions[(game, player)] = (this_win_state, Int[])
+        return board_positions[(game, player)]
     end
     states = Int[]
     moves  = possible_moves(game)
@@ -108,15 +110,15 @@ function evaluate_board(game::TicTacToe, player::Int)
     end
     if in(player, states)
         best_moves = moves[states.==player]
-        board_positions[(game.board, player)] = (player, best_moves)
+        board_positions[(game, player)] = (player, best_moves)
     elseif in(3, states)
         best_moves = moves[states.==3]
-        board_positions[(game.board, player)] = (3, best_moves)
+        board_positions[(game, player)] = (3, best_moves)
     else
         best_moves = moves[states.==3-player]
-        board_positions[(game.board, player)] = (3-player, best_moves)
+        board_positions[(game, player)] = (3-player, best_moves)
     end
-    return board_positions[(game.board, player)]
+    return board_positions[(game, player)]
 end
 
 function perfect_player(game::TicTacToe, player::Int)
@@ -124,14 +126,14 @@ function perfect_player(game::TicTacToe, player::Int)
     rand(best_moves)
 end
 
-function make_q_player(q_table::DefaultDict{(Vector{Int64},Int,Int), Float64})
+function make_q_player(q_table::DefaultDict{(TicTacToe,Int,Int), Float64})
     function q_player(game::TicTacToe, player::Int)
         max_score = -Inf
         best_move = -1
         for move=possible_moves(game)
-            if haskey(q_table, (game.board, player, move))
-                if q_table[(game.board, player, move)]>max_score
-                    max_score = q_table[(game.board, player, move)]
+            if haskey(q_table, (game, player, move))
+                if q_table[(game, player, move)]>max_score
+                    max_score = q_table[(game, player, move)]
                     best_move = move
                 end
             end
@@ -149,17 +151,17 @@ function make_exploration_player(this_player, rate = 0.5)
     end
 end
 
-function learn_from_states!(q_table::DefaultDict{(Vector{Int64},Int,Int), Float64}, alpha, states, win_state, player)
+function learn_from_states!(q_table::DefaultDict{(TicTacToe,Int,Int), Float64}, alpha, states, win_state, player)
     reward = win_state==3 ? 0 : (win_state==player ? 1 : -1)
     for i=1:length(states)-1
-        max_q = maximum([q_table[(states[i+1][1],states[i][2], m)] for m=possible_moves(TicTacToe(states[i+1][1]))])
+        max_q = maximum([q_table[(states[i+1][1],states[i][2], m)] for m=possible_moves(states[i+1][1])])
         q_table[states[i]] = (1-alpha)*q_table[states[i]] + alpha*max_q
     end
     q_table[states[end]] = (1-alpha)*q_table[states[end]]+alpha*reward
 end
 
 function train_q_learning_player()
-    q_table = DefaultDict((Vector{Int},Int,Int), Float64, 0.0)
+    q_table = DefaultDict((TicTacToe,Int,Int), Float64, 0.0)
     q_player = make_q_player(q_table)
     exploration_player = make_exploration_player(q_player)
     alpha = 0.1

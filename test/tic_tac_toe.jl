@@ -1,6 +1,10 @@
 using Base.Test
 using ReinforcementLearning
 
+@test hash(TicTacToe([0,2,0,0,1,0,0,0,0]))==hash(TicTacToe([0,2,0,0,1,0,0,0,0]))
+@test isequal(TicTacToe([0,2,0,0,1,0,0,0,0]), TicTacToe([0,2,0,0,1,0,0,0,0]))
+@test TicTacToe([0,2,0,0,1,0,0,0,0])==TicTacToe([0,2,0,0,1,0,0,0,0])
+
 @test win_state(TicTacToe([0,0,0,
                            0,0,0,
                            0,0,0])) == 0
@@ -29,7 +33,13 @@ using ReinforcementLearning
                            1,1,2,
                            2,1,2])) == 3
 
-
+@test evaluate_board(TicTacToe([0,1,1,0,2,2,0,0,0]), 1)[1]==1
+@test evaluate_board(TicTacToe([0,1,1,0,2,2,0,0,0]), 2)[1]==2
+@test evaluate_board(TicTacToe([0,1,1,0,0,2,0,0,0]), 1)[1]==1
+@test evaluate_board(TicTacToe([0,1,0,0,0,2,0,0,0]), 1)[1]==1
+@test evaluate_board(TicTacToe([0,1,0,0,0,0,0,0,0]), 1)[1]==1
+@test evaluate_board(TicTacToe([0,0,0,0,0,0,0,0,0]), 1)[1]==3
+@test evaluate_board(TicTacToe([1,0,0,0,1,0,1,2,2]), 2)[1]==1
 
 win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac_toe_players(random_player, random_player, 10_000)
 @test draw_percentage < 20.0
@@ -55,15 +65,7 @@ win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac
 @test draw_percentage > 50.0
 println("Q player vs perfect: ", results_txt)
 
-opening = [q_table[(Int[0,0,0,0,0,0,0,0,0], 1, m)] for m=1:9]
+opening = [q_table[(TicTacToe(Int[0,0,0,0,0,0,0,0,0]), 1, m)] for m=1:9]
 for i=1:9
    println("Move ", i, ": ", @sprintf("%0.4f", opening[i]))
 end
-
-@test evaluate_board(TicTacToe([0,1,1,0,2,2,0,0,0]), 1)[1]==1
-@test evaluate_board(TicTacToe([0,1,1,0,2,2,0,0,0]), 2)[1]==2
-@test evaluate_board(TicTacToe([0,1,1,0,0,2,0,0,0]), 1)[1]==1
-@test evaluate_board(TicTacToe([0,1,0,0,0,2,0,0,0]), 1)[1]==1
-@test evaluate_board(TicTacToe([0,1,0,0,0,0,0,0,0]), 1)[1]==1
-@test evaluate_board(TicTacToe([0,0,0,0,0,0,0,0,0]), 1)[1]==3
-@test evaluate_board(TicTacToe([1,0,0,0,1,0,1,2,2]), 2)[1]==1
