@@ -69,3 +69,8 @@ opening = [q_table[(TicTacToe(Int[0,0,0,0,0,0,0,0,0]), 1, m)] for m=1:9]
 for i=1:9
    println("Move ", i, ": ", @sprintf("%0.4f", opening[i]))
 end
+
+@test tic_tac_toe_to_input_features(TicTacToe([0,0,0,0,0,0,0,0,0]))==[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+@test tic_tac_toe_to_input_features(TicTacToe([0,0,0,0,0,0,0,0,1]))==[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]
+@test tic_tac_toe_to_input_features(TicTacToe([2,0,0,0,0,0,0,0,1]))==[0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0]
+@test tic_tac_toe_to_input_features(TicTacToe([2,0,0,0,1,0,0,2,1]))==[0,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0,1,0]

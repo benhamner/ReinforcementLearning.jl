@@ -17,6 +17,7 @@ module ReinforcementLearning
         possible_moves,
         random_player,
         TicTacToe,
+        tic_tac_toe_to_input_features,
         train_q_learning_player,
         win_state
 

@@ -180,6 +180,13 @@ function train_q_learning_player()
     q_table, q_player
 end
 
+function tic_tac_toe_to_input_features(game::TicTacToe)
+    fea = zeros(18)
+    fea[find(game.board.==1)] = 1
+    fea[find(game.board.==2)+9] = 1
+    fea
+end
+
 int_to_string(x::Int) = x==0 ? " " : (x==1 ? "X" : "O")
 board_to_string(game::TicTacToe) = join([join([int_to_string(x) for x=game.board[i:i+2]], "|") for i=1:3:9], "\n-----\n")
 
