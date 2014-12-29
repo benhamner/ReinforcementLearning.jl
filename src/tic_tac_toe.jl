@@ -145,6 +145,23 @@ function make_q_player(q_table::DefaultDict{(TicTacToe,Int,Int), Float64})
     end
 end
 
+function make_q_net_player(net::RegressionNet)
+    function q_net_player(game::TicTacToe, player::Int)
+        max_score = -Inf
+        best_move = -1
+        for move=possible_moves(game)
+            score = predict(net, tic_tac_toe_to_input_features(game, player, move))
+            #println("Score ", score)
+            if score>max_score
+                max_score = score
+                best_move = move
+            end
+        end
+        #println("Best move ", best_move)
+        return best_move
+    end
+end
+
 function make_exploration_player(this_player, rate = 0.5)
     function exploration_player(game::TicTacToe, player::Int)
         rand()<rate ? random_player(game, player) : this_player(game, player)
@@ -152,7 +169,7 @@ function make_exploration_player(this_player, rate = 0.5)
 end
 
 function learn_from_states!(q_table::DefaultDict{(TicTacToe,Int,Int), Float64}, alpha, states, win_state, player)
-    reward = win_state==3 ? 0 : (win_state==player ? 1 : -1)
+    reward = win_state==3 ? 0.5 : (win_state==player ? 1 : 0)
     for i=1:length(states)-1
         max_q = maximum([q_table[(states[i+1][1],states[i][2], m)] for m=possible_moves(states[i+1][1])])
         q_table[states[i]] = (1-alpha)*q_table[states[i]] + alpha*max_q
@@ -160,10 +177,24 @@ function learn_from_states!(q_table::DefaultDict{(TicTacToe,Int,Int), Float64}, 
     q_table[states[end]] = (1-alpha)*q_table[states[end]]+alpha*reward
 end
 
+function learn_from_states_net!(net, temp, alpha, states, win_state, player)
+    reward = win_state==3 ? 0.5 : (win_state==player ? 1 : 0)
+    for i=1:length(states)-1
+        max_q  = maximum([predict(net, tic_tac_toe_to_input_features(states[i+1][1], states[i][2], m)) for m=possible_moves(states[i+1][1])])
+        sample = tic_tac_toe_to_input_features(states[i][1], states[i][2], states[i][3])
+        target = sigmoid((1-alpha)*predict(net, sample) + alpha*max_q)
+        #println("Prediction: ", predict(net, sample))
+        #println("Max_q: ", max_q, " target: ", target)
+        MachineLearning.update_weights!(net, sample, [target], net.options.learning_rate, 100, temp)
+    end
+    sample = tic_tac_toe_to_input_features(states[end][1], states[end][2], states[end][3])
+    target = sigmoid((1-alpha)*predict(net, sample) + alpha*reward)
+    MachineLearning.update_weights!(net, sample, [target], net.options.learning_rate, 100, temp)
+end
+
 function train_q_learning_player()
     q_table = DefaultDict((TicTacToe,Int,Int), Float64, 0.0)
     q_player = make_q_player(q_table)
-    exploration_player = make_exploration_player(q_player)
     alpha = 0.1
     num_games = 10_000
     for i=1:num_games
@@ -180,10 +211,35 @@ function train_q_learning_player()
     q_table, q_player
 end
 
-function tic_tac_toe_to_input_features(game::TicTacToe)
-    fea = zeros(18)
+function train_q_net_player()
+    opts = regression_net_options(hidden_layers=[50,10])
+    num_features = 19
+    net = initialize_regression_net(opts, num_features)
+    temp = initialize_neural_net_temporary(net)
+
+    q_net_player = make_q_net_player(net)
+    alpha = 0.5
+    num_games = 50_000
+    for i=1:num_games
+        player_1 = rand([q_net_player, random_player, perfect_player])
+        player_2 = rand([q_net_player, random_player, perfect_player])
+        states, win_state = play_tic_tac_toe_track_state(player_1, player_2)
+        
+        # Learn from player 1
+        learn_from_states_net!(net, temp, alpha, states[1:2:end], win_state, 1)
+
+        # Learn from player 2
+        learn_from_states_net!(net, temp, alpha, states[2:2:end], win_state, 2)
+    end
+    net, q_net_player
+end
+
+function tic_tac_toe_to_input_features(game::TicTacToe, player::Int, move::Int)
+    fea = zeros(19)
     fea[find(game.board.==1)] = 1
     fea[find(game.board.==2)+9] = 1
+    fea[19] = player==1 ? 1:0
+    fea[(player==1 ? 0 : 9) + move] = 1
     fea
 end
 

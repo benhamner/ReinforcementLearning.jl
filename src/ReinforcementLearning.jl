@@ -1,6 +1,7 @@
 module ReinforcementLearning
     using
-        DataStructures
+        DataStructures,
+        MachineLearning
 
     export
         center_player,
@@ -19,6 +20,7 @@ module ReinforcementLearning
         TicTacToe,
         tic_tac_toe_to_input_features,
         train_q_learning_player,
+        train_q_net_player,
         win_state
 
     include("common.jl")

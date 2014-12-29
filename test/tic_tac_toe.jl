@@ -65,12 +65,17 @@ win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac
 @test draw_percentage > 50.0
 println("Q player vs perfect: ", results_txt)
 
+q_net, q_net_player = train_q_net_player()
+win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac_toe_players(q_net_player, random_player, 10_000)
+#@test win_percentage*100/(win_percentage+loss_percentage) > 75.0
+println("Q net vs random: ", results_txt)
+
 opening = [q_table[(TicTacToe(Int[0,0,0,0,0,0,0,0,0]), 1, m)] for m=1:9]
 for i=1:9
    println("Move ", i, ": ", @sprintf("%0.4f", opening[i]))
 end
 
-@test tic_tac_toe_to_input_features(TicTacToe([0,0,0,0,0,0,0,0,0]))==[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-@test tic_tac_toe_to_input_features(TicTacToe([0,0,0,0,0,0,0,0,1]))==[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]
-@test tic_tac_toe_to_input_features(TicTacToe([2,0,0,0,0,0,0,0,1]))==[0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0]
-@test tic_tac_toe_to_input_features(TicTacToe([2,0,0,0,1,0,0,2,1]))==[0,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0,1,0]
+@test tic_tac_toe_to_input_features(TicTacToe([0,0,0,0,0,0,0,0,0]), 1, 1)==[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+@test tic_tac_toe_to_input_features(TicTacToe([0,0,0,0,0,0,0,0,1]), 2, 1)==[0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0]
+@test tic_tac_toe_to_input_features(TicTacToe([2,0,0,0,0,0,0,0,1]), 1, 1)==[1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1]
+@test tic_tac_toe_to_input_features(TicTacToe([2,0,0,0,1,0,0,2,1]), 1, 2)==[0,1,0,0,1,0,0,0,1,1,0,0,0,0,0,0,1,0,1]
