@@ -6,6 +6,7 @@ module ReinforcementLearning
     export
         center_player,
         command_player,
+        ConnectFour,
         evaluate_board,
         evaluate_tic_tac_toe_players,
         Game,
@@ -24,5 +25,6 @@ module ReinforcementLearning
         win_state
 
     include("common.jl")
+    include("connect_four.jl")
     include("tic_tac_toe.jl")
 end

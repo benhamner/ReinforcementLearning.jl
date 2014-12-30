@@ -185,11 +185,11 @@ function learn_from_states_net!(net, temp, alpha, states, win_state, player)
         target = sigmoid((1-alpha)*predict(net, sample) + alpha*max_q)
         #println("Prediction: ", predict(net, sample))
         #println("Max_q: ", max_q, " target: ", target)
-        MachineLearning.update_weights!(net, sample, [target], net.options.learning_rate, 100, temp)
+        MachineLearning.update_weights!(net, sample, [target], net.options.learning_rate, 10_000, temp)
     end
     sample = tic_tac_toe_to_input_features(states[end][1], states[end][2], states[end][3])
     target = sigmoid((1-alpha)*predict(net, sample) + alpha*reward)
-    MachineLearning.update_weights!(net, sample, [target], net.options.learning_rate, 100, temp)
+    MachineLearning.update_weights!(net, sample, [target], net.options.learning_rate, 10_000, temp)
 end
 
 function train_q_learning_player()
@@ -219,7 +219,7 @@ function train_q_net_player()
 
     q_net_player = make_q_net_player(net)
     alpha = 0.5
-    num_games = 50_000
+    num_games = 10_000
     for i=1:num_games
         player_1 = rand([q_net_player, random_player, perfect_player])
         player_2 = rand([q_net_player, random_player, perfect_player])
