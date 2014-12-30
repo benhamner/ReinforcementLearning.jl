@@ -1,6 +1,7 @@
 using Base.Test
 
 tests = [
+    "connect_four",
     "tic_tac_toe"]
 
 println("Running tests:")
