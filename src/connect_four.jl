@@ -42,3 +42,5 @@ function win_state(game::ConnectFour)
     end
     return 0
 end
+
+possible_moves(game::ConnectFour) = filter(col -> game.board[1,col]==0, Int[1:6])
