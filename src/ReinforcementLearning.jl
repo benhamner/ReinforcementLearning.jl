@@ -14,6 +14,7 @@ module ReinforcementLearning
         hash,
         initialize_tic_tac_toe,
         isequal,
+        make_lookahead_player,
         perfect_player,
         play_connect_four,
         play_connect_four_random_first_move,

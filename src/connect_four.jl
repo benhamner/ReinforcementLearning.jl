@@ -46,17 +46,21 @@ end
 possible_moves(game::ConnectFour) = filter(col -> game.board[1,col]==0, Int[1:6])
 random_player(game::ConnectFour, player::Int) = rand(possible_moves(game))
 
+function move!(game::ConnectFour, player::Int, move::Int)
+    row = maximum(find(game.board[:,move].==0))
+    if game.board[row,move]==0
+        game.board[row,move] = player
+    else
+        throw("Error: Invalid Move: " * move * " on board: " * string(game.board))
+    end
+end
+
 function play_connect_four(player_1::Function, player_2::Function)
     game = initialize_connect_four()
     turn = 1
     while win_state(game)==0
         col = turn==1 ? player_1(game, turn) : player_2(game, turn)
-        row = maximum(find(game.board[:,col].==0))
-        if game.board[row,col]==0
-            game.board[row,col] = turn
-        else
-            throw("Error: Invalid Move: " * col * " on board: " * string(game.board))
-        end
+        move!(game, turn, col)
         turn = 3 - turn # alternates between 1 and 2
     end
     win_state(game)
@@ -84,3 +88,37 @@ function evaluate_connect_four_players(player_1::Function, player_2::Function, n
     results_text = @sprintf("%2.2f%% wins, %2.2f%% losses, %2.2f%% draws", win_percentage, loss_percentage, draw_percentage)
     win_percentage, draw_percentage, loss_percentage, results_text
 end
+
+function lookahead(game::ConnectFour, player::Int, moves_left::Int)
+    state = win_state(game)
+    if state>0
+        return (state, Int[])
+    end
+    moves = possible_moves(game)
+    if moves_left==0
+        return (0, moves)
+    end
+    states = Int[]
+    for move=moves
+        new_game = ConnectFour(copy(game.board))
+        move!(new_game, player, move)
+        push!(states, lookahead(new_game, 3-player, moves_left-1)[1])
+    end
+    if in(player, states)
+        return (player, moves[states.==player])
+    elseif in(3, states)
+        return (3, moves[states.==3])
+    elseif in(0, states)
+        return (0, moves[states.==0])
+    else
+        return (states[1], moves)
+    end
+end
+
+function make_lookahead_player(num_moves::Int)
+    function lookahead_player(game::ConnectFour, player::Int)
+        outcome, best_moves = lookahead(game, player, num_moves)
+        rand(best_moves)
+    end
+end
+
