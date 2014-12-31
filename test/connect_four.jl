@@ -96,9 +96,20 @@ cf2 = ConnectFour([0 0 0 0 0 0;
                                   1 2 2 1 1 1;
                                   2 2 1 2 1 1])) == [1,3,4,6]
 
-win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(random_player, random_player, 10_000)
+@time win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(random_player, random_player, 10_000)
 println("Random vs random: ", results_txt)
+@test win_percentage*100/(win_percentage+loss_percentage) > 40.0
+@test win_percentage*100/(win_percentage+loss_percentage) < 60.0
 
-win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(make_lookahead_player(2), random_player, 200)
+@time win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(make_lookahead_player(0), random_player, 100)
+println("Lookahead0 vs random: ", results_txt)
+@test win_percentage*100/(win_percentage+loss_percentage) > 40.0
+@test win_percentage*100/(win_percentage+loss_percentage) < 60.0
+
+@time win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(make_lookahead_player(1), random_player, 100)
+println("Lookahead1 vs random: ", results_txt)
+@test win_percentage*100/(win_percentage+loss_percentage) > 65.0
+
+@time win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(make_lookahead_player(2), random_player, 100)
 println("Lookahead2 vs random: ", results_txt)
 @test win_percentage*100/(win_percentage+loss_percentage) > 80.0
