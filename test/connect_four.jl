@@ -99,6 +99,6 @@ cf2 = ConnectFour([0 0 0 0 0 0;
 win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(random_player, random_player, 10_000)
 println("Random vs random: ", results_txt)
 
-win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(make_lookahead_player(2), random_player, 1_000)
+win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(make_lookahead_player(2), random_player, 200)
 println("Lookahead2 vs random: ", results_txt)
 @test win_percentage*100/(win_percentage+loss_percentage) > 80.0
