@@ -6,7 +6,7 @@ Base.hash(game::ConnectFour, h::UInt) = hash(game.board, h)
 Base.isequal(g1::ConnectFour, g2::ConnectFour) = isequal(g1.board, g2.board)
 ==(g1::ConnectFour, g2::ConnectFour) = g1.board==g2.board
 
-initialize_connect_four() = ConnectFour(zeros(Int, 6, 6))
+initialize_connect_four() = ConnectFour(zeros(Int, 6, 7))
 
 function win_state(game::ConnectFour)
     # 0 = no one wins
@@ -14,24 +14,24 @@ function win_state(game::ConnectFour)
     # 2 = player 2 wins
     # 3 = draw
     for row=1:6
-        for col=1:6
+        for col=1:7
             for player=1:2
                 # vertical win
                 if row<=3 && sum(game.board[row:row+3,col].==player)==4
                     return player
                 end
                 # horizontal win
-                if col<=3 && sum(game.board[row,col:col+3].==player)==4
+                if col<=4 && sum(game.board[row,col:col+3].==player)==4
                     return player
                 end
                 # diagonal top-left to bottom-right win
                 win_locs = [6*(col+i-1)+(row+i) for i=0:3]
-                if row<=3 && col<=3 && sum(game.board[win_locs].==player)==4
+                if row<=3 && col<=4 && sum(game.board[win_locs].==player)==4
                     return player
                 end
                 # diagonal top-right to bottom-left win
                 win_locs = [6*(col+3-i-1)+(row+i) for i=0:3]
-                if row<=3 && col<=3 && sum(game.board[win_locs].==player)==4
+                if row<=3 && col<=4 && sum(game.board[win_locs].==player)==4
                     return player
                 end
             end
@@ -43,7 +43,7 @@ function win_state(game::ConnectFour)
     return 0
 end
 
-possible_moves(game::ConnectFour) = filter(col -> game.board[1,col]==0, Int[1:6])
+possible_moves(game::ConnectFour) = filter(col -> game.board[1,col]==0, Int[1:7])
 random_player(game::ConnectFour, player::Int) = rand(possible_moves(game))
 
 function move!(game::ConnectFour, player::Int, move::Int)
