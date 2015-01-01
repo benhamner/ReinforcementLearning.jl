@@ -96,6 +96,19 @@ cf2 = ConnectFour([0 0 0 0 0 0;
                                   1 2 2 1 1 1;
                                   2 2 1 2 1 1])) == [1,3,4,6]
 
+@test move!(ConnectFour([0 0 0 0 0 0;
+                         0 0 0 0 0 0;
+                         0 0 0 0 0 0;
+                         0 0 0 0 0 0;
+                         0 0 0 0 0 0;
+                         0 0 0 0 0 0;]), 1, 4)==
+            ConnectFour([0 0 0 0 0 0;
+                         0 0 0 0 0 0;
+                         0 0 0 0 0 0;
+                         0 0 0 0 0 0;
+                         0 0 0 0 0 0;
+                         0 0 0 1 0 0;])
+
 @time win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(random_player, random_player, 10_000)
 println("Random vs random: ", results_txt)
 @test win_percentage*100/(win_percentage+loss_percentage) > 40.0

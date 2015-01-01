@@ -53,6 +53,7 @@ function move!(game::ConnectFour, player::Int, move::Int)
     else
         throw("Error: Invalid Move: " * move * " on board: " * string(game.board))
     end
+    game
 end
 
 function play_connect_four(player_1::Function, player_2::Function)
