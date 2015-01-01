@@ -45,6 +45,7 @@ end
 
 possible_moves(game::ConnectFour) = filter(col -> game.board[1,col]==0, Int[1:7])
 random_player(game::ConnectFour, player::Int) = rand(possible_moves(game))
+center_player(game::ConnectFour, player::Int) = game.board[3,4]==0 ? 4 : random_player(game, player)
 
 function move!(game::ConnectFour, player::Int, move::Int)
     row = maximum(find(game.board[:,move].==0))
