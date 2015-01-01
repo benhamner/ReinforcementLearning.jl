@@ -124,3 +124,12 @@ function make_lookahead_player(num_moves::Int)
     end
 end
 
+board_to_string(game::ConnectFour) = join([join([int_to_string(game.board[row,col]) for col=1:7], "|") for row=1:6], "\n-------------\n")
+
+function command_player(game::ConnectFour, player::Int)
+    println(board_to_string(game))
+    println("You are player ", int_to_string(player))
+    input = readline(STDIN)
+    int(input)
+end
+
