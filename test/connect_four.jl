@@ -131,7 +131,7 @@ println("Random vs random: ", results_txt)
 @test win_percentage*100/(win_percentage+loss_percentage) > 65.0
 println("Center vs random: ", results_txt)
 
-@time win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(make_lookahead_player(0), random_player, 100)
+@time win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(make_lookahead_player(0), random_player, 1_000)
 println("Lookahead0 vs random: ", results_txt)
 @test win_percentage*100/(win_percentage+loss_percentage) > 40.0
 @test win_percentage*100/(win_percentage+loss_percentage) < 60.0
