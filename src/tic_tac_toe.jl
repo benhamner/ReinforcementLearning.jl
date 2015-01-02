@@ -208,7 +208,7 @@ function train_q_learning_player()
     q_table, q_player
 end
 
-function train_q_net_player(hidden_layers=[100], num_games=10_000)
+function train_q_net_player(;hidden_layers=[100], num_games=10_000)
     opts = regression_net_options(hidden_layers=hidden_layers, regularization_factor=0.0)
     num_features = 18
     net = initialize_regression_net(opts, num_features)
