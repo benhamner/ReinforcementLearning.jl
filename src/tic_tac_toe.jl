@@ -32,7 +32,6 @@ function win_state(game::TicTacToe)
 end
 
 possible_moves(game::TicTacToe) = find(game.board.==0)
-random_player(game::TicTacToe, player::Int) = rand(possible_moves(game))
 center_player(game::TicTacToe, player::Int) = game.board[5]==0 ? 5 : random_player(game, player)
 
 function play_tic_tac_toe(player_1::Function, player_2::Function)
@@ -183,13 +182,11 @@ function learn_from_states_net!(net, temp, alpha, states, win_state, player)
         max_q  = maximum([predict(net, tic_tac_toe_to_input_features(states[i+1][1], states[i][2], m)) for m=possible_moves(states[i+1][1])])
         sample = tic_tac_toe_to_input_features(states[i][1], states[i][2], states[i][3])
         target = sigmoid((1-alpha)*predict(net, sample) + alpha*max_q)
-        #println("Prediction: ", predict(net, sample))
-        #println("Max_q: ", max_q, " target: ", target)
-        MachineLearning.update_weights!(net, sample, [target], net.options.learning_rate, 10_000, temp)
+        MachineLearning.update_weights!(net, sample, [target], net.options.learning_rate, net.options.regularization_factor, 100, temp)
     end
     sample = tic_tac_toe_to_input_features(states[end][1], states[end][2], states[end][3])
     target = sigmoid((1-alpha)*predict(net, sample) + alpha*reward)
-    MachineLearning.update_weights!(net, sample, [target], net.options.learning_rate, 10_000, temp)
+    MachineLearning.update_weights!(net, sample, [target], net.options.learning_rate, net.options.regularization_factor, 100, temp)
 end
 
 function train_q_learning_player()
@@ -211,15 +208,14 @@ function train_q_learning_player()
     q_table, q_player
 end
 
-function train_q_net_player()
-    opts = regression_net_options(hidden_layers=[50,10])
-    num_features = 19
+function train_q_net_player(hidden_layers=[100], num_games=10_000)
+    opts = regression_net_options(hidden_layers=hidden_layers, regularization_factor=0.0)
+    num_features = 18
     net = initialize_regression_net(opts, num_features)
     temp = initialize_neural_net_temporary(net)
 
     q_net_player = make_q_net_player(net)
     alpha = 0.5
-    num_games = 10_000
     for i=1:num_games
         player_1 = rand([q_net_player, random_player, perfect_player])
         player_2 = rand([q_net_player, random_player, perfect_player])
@@ -235,15 +231,15 @@ function train_q_net_player()
 end
 
 function tic_tac_toe_to_input_features(game::TicTacToe, player::Int, move::Int)
-    fea = zeros(19)
-    fea[find(game.board.==1)] = 1
-    fea[find(game.board.==2)+9] = 1
-    fea[19] = player==1 ? 1:0
-    fea[(player==1 ? 0 : 9) + move] = 1
+    fea = zeros(18)
+    fea[find(game.board.==player)] = 1
+    fea[find(game.board.==3-player)+9] = 1
+    fea[move] = 1
+    #fea[19] = player==1 ? 1:0
+    #fea[(player==1 ? 0 : 9) + move] = 1
     fea
 end
 
-int_to_string(x::Int) = x==0 ? " " : (x==1 ? "X" : "O")
 board_to_string(game::TicTacToe) = join([join([int_to_string(x) for x=game.board[i:i+2]], "|") for i=1:3:9], "\n-----\n")
 
 function command_player(game::TicTacToe, player::Int)
