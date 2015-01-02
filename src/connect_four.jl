@@ -76,6 +76,19 @@ function play_connect_four_random_first_move(player_1::Function, player_2::Funct
     res < 3 ? 3-res : res
 end
 
+function play_connect_four_track_state(player_1::Function, player_2::Function)
+    game = initialize_connect_four()
+    states = Array((ConnectFour, Int, Int), 0) # state, turn, move
+    turn = 1
+    while win_state(game)==0
+        col = turn==1 ? player_1(game, turn) : player_2(game, turn)
+        push!(states, (ConnectFour(copy(game.board)), turn, col))
+        move!(game, turn, col)
+        turn = 3 - turn # alternates between 1 and 2
+    end
+    states, win_state(game)
+end
+
 function evaluate_connect_four_players(player_1::Function, player_2::Function, num_samples::Int)
     wins  = 0
     draws = 0
@@ -122,6 +135,16 @@ function make_lookahead_player(num_moves::Int)
         outcome, best_moves = lookahead(game, player, num_moves)
         rand(best_moves)
     end
+end
+
+function game_to_input_features(game::ConnectFour, player::Int, move::Int)
+    fea = zeros(42*2)
+    fea[find(game.board.==player)] = 1
+    fea[find(game.board.==3-player)+42] = 1
+    fea[move] = 1
+    #fea[19] = player==1 ? 1:0
+    #fea[(player==1 ? 0 : 9) + move] = 1
+    fea
 end
 
 board_to_string(game::ConnectFour) = join([join([int_to_string(game.board[row,col]) for col=1:7], "|") for row=1:6], "\n-------------\n")

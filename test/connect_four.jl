@@ -127,9 +127,9 @@ println("Random vs random: ", results_txt)
 @test win_percentage*100/(win_percentage+loss_percentage) > 40.0
 @test win_percentage*100/(win_percentage+loss_percentage) < 60.0
 
-@time win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(center_player, random_player, 10_000)
-@test win_percentage*100/(win_percentage+loss_percentage) > 65.0
+@time win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(center_player, random_player, 1_000)
 println("Center vs random: ", results_txt)
+@test win_percentage*100/(win_percentage+loss_percentage) > 65.0
 
 @time win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(make_lookahead_player(0), random_player, 1_000)
 println("Lookahead0 vs random: ", results_txt)
@@ -143,3 +143,8 @@ println("Lookahead1 vs random: ", results_txt)
 @time win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(make_lookahead_player(2), random_player, 100)
 println("Lookahead2 vs random: ", results_txt)
 @test win_percentage*100/(win_percentage+loss_percentage) > 80.0
+
+@time q_net, q_net_player = train_q_net_player(play_connect_four_track_state, 84, [random_player, make_lookahead_player(1)], num_games=200)
+@time win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(q_net_player, random_player, 200)
+println("Q net vs random: ", results_txt)
+#@test win_percentage*100/(win_percentage+loss_percentage) > 60.0
