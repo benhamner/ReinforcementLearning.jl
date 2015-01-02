@@ -41,10 +41,10 @@ using ReinforcementLearning
 @test evaluate_board(TicTacToe([0,0,0,0,0,0,0,0,0]), 1)[1]==3
 @test evaluate_board(TicTacToe([1,0,0,0,1,0,1,2,2]), 2)[1]==1
 
-@test tic_tac_toe_to_input_features(TicTacToe([0,0,0,0,0,0,0,0,0]), 1, 1)==[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-@test tic_tac_toe_to_input_features(TicTacToe([0,0,0,0,0,0,0,0,1]), 2, 1)==[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
-@test tic_tac_toe_to_input_features(TicTacToe([2,0,0,0,0,0,0,0,1]), 1, 1)==[1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0]
-@test tic_tac_toe_to_input_features(TicTacToe([2,0,0,0,1,0,0,2,1]), 1, 2)==[0,1,0,0,1,0,0,0,1,1,0,0,0,0,0,0,1,0]
+@test game_to_input_features(TicTacToe([0,0,0,0,0,0,0,0,0]), 1, 1)==[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+@test game_to_input_features(TicTacToe([0,0,0,0,0,0,0,0,1]), 2, 1)==[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+@test game_to_input_features(TicTacToe([2,0,0,0,0,0,0,0,1]), 1, 1)==[1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0]
+@test game_to_input_features(TicTacToe([2,0,0,0,1,0,0,2,1]), 1, 2)==[0,1,0,0,1,0,0,0,1,1,0,0,0,0,0,0,1,0]
 
 win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac_toe_players(random_player, random_player, 10_000)
 @test draw_percentage < 20.0

@@ -10,6 +10,7 @@ module ReinforcementLearning
         evaluate_board,
         evaluate_tic_tac_toe_players,
         evaluate_connect_four_players,
+        game_to_input_features,
         Game,
         hash,
         initialize_tic_tac_toe,
@@ -24,7 +25,6 @@ module ReinforcementLearning
         possible_moves,
         random_player,
         TicTacToe,
-        tic_tac_toe_to_input_features,
         train_q_learning_player,
         train_q_net_player,
         win_state
