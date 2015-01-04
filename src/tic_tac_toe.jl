@@ -85,7 +85,7 @@ function evaluate_tic_tac_toe_players(player_1::Function, player_2::Function, nu
     win_percentage = wins / num_samples * 100
     draw_percentage = draws / num_samples * 100
     loss_percentage = (num_samples-wins-draws) / num_samples * 100
-    results_text = @sprintf("%2.2f%% wins, %2.2f%% losses, %2.2f%% draws", win_percentage, loss_percentage, draw_percentage)
+    results_text = @sprintf("%2.2f%% wins, %2.2f%% losses, %2.2f%% draws, %2.2f%% comparitive wins", win_percentage, loss_percentage, draw_percentage, wins/(num_samples-draws)*100.0)
     win_percentage, draw_percentage, loss_percentage, results_text
 end
 
