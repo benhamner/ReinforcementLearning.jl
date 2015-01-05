@@ -196,3 +196,22 @@ function command_player(game::TicTacToe, player::Int)
     input = readline(STDIN)
     int(input)
 end
+
+function plot_tic_tac_toe_neuron(weights::Vector{Float64})
+    @assert length(weights)==18
+    player = vcat(["F" for i=1:9], ["E" for i=1:9])
+    rows   = [1,1,1,2,2,2,3,3,3,1,1,1,2,2,2,3,3,3]
+    cols   = vcat([[1:3] for x=1:6]...)
+    data   = DataFrame(Player=player, Rows=rows, Cols=cols, Weights=weights)
+    layer(data,
+          x=:Player,
+          y=:Weights,
+          color=:Player,
+          xgroup=:Cols,
+          ygroup=:Rows,
+          Geom.subplot_grid(Geom.bar))
+end
+
+function plot_tic_tac_toe_neurons(net::NeuralNet)
+
+end

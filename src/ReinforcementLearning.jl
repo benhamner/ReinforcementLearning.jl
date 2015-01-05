@@ -1,6 +1,8 @@
 module ReinforcementLearning
     using
+        DataFrames,
         DataStructures,
+        Gadfly,
         MachineLearning
 
     export
@@ -25,6 +27,7 @@ module ReinforcementLearning
         play_tic_tac_toe,
         play_tic_tac_toe_random_first_move,
         play_tic_tac_toe_track_state,
+        plot_tic_tac_toe_neuron,
         possible_moves,
         random_player,
         TicTacToe,
