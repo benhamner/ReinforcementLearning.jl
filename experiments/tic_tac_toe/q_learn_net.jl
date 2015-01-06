@@ -25,7 +25,9 @@ function train_q_net_player_h(play_game_function,
                             hidden_layers=[25],
                             num_history=50_000,
                             update_prob::Float64=0.0)
-    opts = regression_net_options(hidden_layers=hidden_layers, regularization_factor=0.02)
+    opts = regression_net_options(hidden_layers=hidden_layers, 
+                                  learning_rate=100.0,
+                                  regularization_factor=0.02)
     net  = initialize_regression_net(opts, num_features)
     temp = initialize_neural_net_temporary(net)
 
@@ -62,7 +64,7 @@ function train_q_net_player_h(play_game_function,
 
     sample = zeros(num_features)
 
-    for i=1:1_000_000
+    for i=1:100_000
         loc = rand(1:num_history)
         sample[:] = history[loc,:]
         q_sample = predict(net, sample)
@@ -88,7 +90,7 @@ for sample=1:10
     q_net, q_net_player = train_q_net_player_h(play_tic_tac_toe_track_state,
                                                18,
                                                [random_player, perfect_player],
-                                               update_prob=0.05)
+                                               update_prob=0.01)
     win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac_toe_players(q_net_player, random_player, 10_000)
     println("Q net vs random: ", results_txt)
 end

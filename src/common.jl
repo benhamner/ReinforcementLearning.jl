@@ -39,7 +39,7 @@ function train_q_net_player(play_game_function,
                             hidden_layers=[100],
                             num_games=10_000)
     opts = regression_net_options(hidden_layers=hidden_layers,
-                                  learning_rate=50.0,
+                                  learning_rate=5.0,
                                   regularization_factor=0.0)
     net = initialize_regression_net(opts, num_features)
     temp = initialize_neural_net_temporary(net)
@@ -61,3 +61,19 @@ function train_q_net_player(play_game_function,
     end
     net, q_net_player
 end
+
+function evaluate_players(game_function::Function, player_1::Function, player_2::Function, num_samples::Int)
+    wins  = 0
+    draws = 0
+    for i=1:num_samples
+       winner = game_function(player_1, player_2)
+       wins  += winner==1 ? 1 : 0
+       draws += winner==3 ? 1 : 0
+    end
+    win_percentage = wins / num_samples * 100
+    draw_percentage = draws / num_samples * 100
+    loss_percentage = (num_samples-wins-draws) / num_samples * 100
+    results_text = @sprintf("%2.2f%% wins, %2.2f%% losses, %2.2f%% draws, %2.2f%% relative wins", win_percentage, loss_percentage, draw_percentage, wins/(num_samples-draws)*100.0)
+    win_percentage, draw_percentage, loss_percentage, results_text
+end
+

@@ -10,6 +10,7 @@ module ReinforcementLearning
         command_player,
         ConnectFour,
         evaluate_board,
+        evaluate_players,
         evaluate_tic_tac_toe_players,
         evaluate_connect_four_players,
         game_to_input_features,

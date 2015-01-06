@@ -89,20 +89,8 @@ function play_connect_four_track_state(player_1::Function, player_2::Function)
     states, win_state(game)
 end
 
-function evaluate_connect_four_players(player_1::Function, player_2::Function, num_samples::Int)
-    wins  = 0
-    draws = 0
-    for i=1:num_samples
-       winner = play_connect_four_random_first_move(player_1, player_2)
-       wins  += winner==1 ? 1 : 0
-       draws += winner==3 ? 1 : 0
-    end
-    win_percentage = wins / num_samples * 100
-    draw_percentage = draws / num_samples * 100
-    loss_percentage = (num_samples-wins-draws) / num_samples * 100
-    results_text = @sprintf("%2.2f%% wins, %2.2f%% losses, %2.2f%% draws", win_percentage, loss_percentage, draw_percentage)
-    win_percentage, draw_percentage, loss_percentage, results_text
-end
+evaluate_connect_four_players(player_1::Function, player_2::Function, num_samples::Int) =
+    evaluate_players(play_connect_four_random_first_move, player_1, player_2, num_samples)
 
 function lookahead(game::ConnectFour, player::Int, moves_left::Int)
     state = win_state(game)
