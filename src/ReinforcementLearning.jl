@@ -16,7 +16,6 @@ module ReinforcementLearning
         game_to_input_features,
         Game,
         hash,
-        initialize_tic_tac_toe,
         isequal,
         make_lookahead_player,
         make_q_net_player,

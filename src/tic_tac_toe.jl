@@ -1,12 +1,11 @@
-
 immutable TicTacToe <: Game
     board::Vector{Int}
 end
+TicTacToe() = TicTacToe(zeros(Int, 9))
+
 Base.hash(game::TicTacToe, h::UInt) = hash(game.board, h)
 Base.isequal(g1::TicTacToe, g2::TicTacToe) = isequal(g1.board, g2.board)
 ==(g1::TicTacToe, g2::TicTacToe) = g1.board==g2.board
-
-initialize_tic_tac_toe() = TicTacToe(zeros(Int, 9))
 
 function win_state(game::TicTacToe)
     # 0 = no one wins
@@ -35,7 +34,7 @@ possible_moves(game::TicTacToe) = find(game.board.==0)
 center_player(game::TicTacToe, player::Int) = game.board[5]==0 ? 5 : random_player(game, player)
 
 function play_tic_tac_toe(player_1::Function, player_2::Function)
-    game = initialize_tic_tac_toe()
+    game = TicTacToe()
     turn = 1
     while win_state(game)==0
         move = turn==1 ? player_1(game, turn) : player_2(game, turn)
@@ -50,7 +49,7 @@ function play_tic_tac_toe(player_1::Function, player_2::Function)
 end
 
 function play_tic_tac_toe_track_state(player_1::Function, player_2::Function)
-    game = initialize_tic_tac_toe()
+    game = TicTacToe()
     states = Array((TicTacToe, Int, Int), 0) # state, turn, move
     turn = 1
     while win_state(game)==0

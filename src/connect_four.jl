@@ -1,12 +1,11 @@
-
 immutable ConnectFour <: Game
     board::Array{Int, 2}
 end
+ConnectFour()=ConnectFour(zeros(Int, 6, 7))
+
 Base.hash(game::ConnectFour, h::UInt) = hash(game.board, h)
 Base.isequal(g1::ConnectFour, g2::ConnectFour) = isequal(g1.board, g2.board)
 ==(g1::ConnectFour, g2::ConnectFour) = g1.board==g2.board
-
-initialize_connect_four() = ConnectFour(zeros(Int, 6, 7))
 
 function win_state(game::ConnectFour)
     # 0 = no one wins
@@ -58,7 +57,7 @@ function move!(game::ConnectFour, player::Int, move::Int)
 end
 
 function play_connect_four(player_1::Function, player_2::Function)
-    game = initialize_connect_four()
+    game = ConnectFour()
     turn = 1
     while win_state(game)==0
         col = turn==1 ? player_1(game, turn) : player_2(game, turn)
@@ -77,7 +76,7 @@ function play_connect_four_random_first_move(player_1::Function, player_2::Funct
 end
 
 function play_connect_four_track_state(player_1::Function, player_2::Function)
-    game = initialize_connect_four()
+    game = ConnectFour()
     states = Array((ConnectFour, Int, Int), 0) # state, turn, move
     turn = 1
     while win_state(game)==0
