@@ -36,12 +36,9 @@ end
 function train_q_net_player(play_game_function,
                             num_features,
                             players::Vector{Function};
-                            hidden_layers=[100],
-                            num_games=10_000)
-    opts = regression_net_options(hidden_layers=hidden_layers,
-                                  learning_rate=5.0,
-                                  regularization_factor=0.0)
-    net = initialize_regression_net(opts, num_features)
+                            num_games=10_000,
+                            net_options=regression_net_options(regularization_factor=0.0))
+    net = initialize_regression_net(net_options, num_features)
     temp = initialize_neural_net_temporary(net)
 
     q_net_player = make_q_net_player(net)
