@@ -3,6 +3,7 @@ immutable ConnectFour <: Game
 end
 ConnectFour()=ConnectFour(zeros(Int, 6, 7))
 
+Base.copy(game::ConnectFour) = ConnectFour(copy(game.board))
 Base.hash(game::ConnectFour, h::UInt) = hash(game.board, h)
 Base.isequal(g1::ConnectFour, g2::ConnectFour) = isequal(g1.board, g2.board)
 ==(g1::ConnectFour, g2::ConnectFour) = g1.board==g2.board
@@ -56,37 +57,9 @@ function move!(game::ConnectFour, player::Int, move::Int)
     game
 end
 
-function play_connect_four(player_1::Function, player_2::Function)
-    game = ConnectFour()
-    turn = 1
-    while win_state(game)==0
-        col = turn==1 ? player_1(game, turn) : player_2(game, turn)
-        move!(game, turn, col)
-        turn = 3 - turn # alternates between 1 and 2
-    end
-    win_state(game)
-end
-
-function play_connect_four_random_first_move(player_1::Function, player_2::Function)
-    if rand(1:2)==1
-        return play_connect_four(player_1, player_2)
-    end
-    res = play_connect_four(player_2, player_1)
-    res < 3 ? 3-res : res
-end
-
-function play_connect_four_track_state(player_1::Function, player_2::Function)
-    game = ConnectFour()
-    states = Array((ConnectFour, Int, Int), 0) # state, turn, move
-    turn = 1
-    while win_state(game)==0
-        col = turn==1 ? player_1(game, turn) : player_2(game, turn)
-        push!(states, (ConnectFour(copy(game.board)), turn, col))
-        move!(game, turn, col)
-        turn = 3 - turn # alternates between 1 and 2
-    end
-    states, win_state(game)
-end
+play_connect_four(player_1::Function, player_2::Function) = play_game(ConnectFour, player_1, player_2)
+play_connect_four_random_first_move(player_1::Function, player_2::Function) = play_game_random_first_move(ConnectFour, player_1, player_2)
+play_connect_four_track_state(player_1::Function, player_2::Function) = play_game_track_state(ConnectFour, player_1, player_2)
 
 evaluate_connect_four_players(player_1::Function, player_2::Function, num_samples::Int) =
     evaluate_players(play_connect_four_random_first_move, player_1, player_2, num_samples)
@@ -129,8 +102,6 @@ function game_to_input_features(game::ConnectFour, player::Int, move::Int)
     fea[find(game.board.==player)] = 1
     fea[find(game.board.==3-player)+42] = 1
     fea[move] = 1
-    #fea[19] = player==1 ? 1:0
-    #fea[(player==1 ? 0 : 9) + move] = 1
     fea
 end
 
@@ -142,4 +113,3 @@ function command_player(game::ConnectFour, player::Int)
     input = readline(STDIN)
     int(input)
 end
-

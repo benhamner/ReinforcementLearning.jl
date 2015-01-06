@@ -33,6 +33,9 @@ using ReinforcementLearning
                            1,1,2,
                            2,1,2])) == 3
 
+@test move!(TicTacToe([0,0,0,0,0,0,0,0,0]), 1, 5)==TicTacToe([0,0,0,0,1,0,0,0,0])
+@test move!(TicTacToe([0,0,0,0,1,0,0,0,0]), 2, 1)==TicTacToe([2,0,0,0,1,0,0,0,0])
+
 @test evaluate_board(TicTacToe([0,1,1,0,2,2,0,0,0]), 1)[1]==1
 @test evaluate_board(TicTacToe([0,1,1,0,2,2,0,0,0]), 2)[1]==2
 @test evaluate_board(TicTacToe([0,1,1,0,0,2,0,0,0]), 1)[1]==1

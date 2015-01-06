@@ -3,6 +3,38 @@ abstract Game
 int_to_string(x::Int) = x==0 ? " " : (x==1 ? "X" : "O")
 random_player(game::Game, player::Int) = rand(possible_moves(game))
 
+function play_game(game_type::Type, player_1::Function, player_2::Function)
+    game = game_type()
+    turn = 1
+    while win_state(game)==0
+        move = turn==1 ? player_1(game, turn) : player_2(game, turn)
+        move!(game, turn, move)
+        turn = 3 - turn # alternates between 1 and 2
+    end
+    win_state(game)
+end
+
+function play_game_random_first_move(game_type::Type, player_1::Function, player_2::Function)
+    if rand(1:2)==1
+        return play_game(game_type, player_1, player_2)
+    end
+    res = play_game(game_type, player_2, player_1)
+    res < 3 ? 3-res : res
+end
+
+function play_game_track_state(game_type::Type, player_1::Function, player_2::Function)
+    game = game_type()
+    states = Array((game_type, Int, Int), 0) # state, turn, move
+    turn = 1
+    while win_state(game)==0
+        col = turn==1 ? player_1(game, turn) : player_2(game, turn)
+        push!(states, (copy(game), turn, col))
+        move!(game, turn, col)
+        turn = 3 - turn # alternates between 1 and 2
+    end
+    states, win_state(game)
+end
+
 function make_q_net_player(net::RegressionNet)
     function q_net_player(game, player::Int)
         max_score = -Inf
@@ -71,4 +103,3 @@ function evaluate_players(game_function::Function, player_1::Function, player_2:
     results_text = @sprintf("%2.2f%% wins, %2.2f%% losses, %2.2f%% draws, %2.2f%% relative wins", win_percentage, loss_percentage, draw_percentage, wins/(num_samples-draws)*100.0)
     win_percentage, draw_percentage, loss_percentage, results_text
 end
-

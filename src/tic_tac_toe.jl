@@ -3,6 +3,7 @@ immutable TicTacToe <: Game
 end
 TicTacToe() = TicTacToe(zeros(Int, 9))
 
+Base.copy(game::TicTacToe) = TicTacToe(copy(game.board))
 Base.hash(game::TicTacToe, h::UInt) = hash(game.board, h)
 Base.isequal(g1::TicTacToe, g2::TicTacToe) = isequal(g1.board, g2.board)
 ==(g1::TicTacToe, g2::TicTacToe) = g1.board==g2.board
@@ -33,45 +34,18 @@ end
 possible_moves(game::TicTacToe) = find(game.board.==0)
 center_player(game::TicTacToe, player::Int) = game.board[5]==0 ? 5 : random_player(game, player)
 
-function play_tic_tac_toe(player_1::Function, player_2::Function)
-    game = TicTacToe()
-    turn = 1
-    while win_state(game)==0
-        move = turn==1 ? player_1(game, turn) : player_2(game, turn)
-        if game.board[move]==0
-            game.board[move] = turn
-        else
-            throw("Error: Invalid Move: " * string(move) * " on board: " * string(game.board))
-        end
-        turn = 3 - turn # alternates between 1 and 2
+function move!(game::TicTacToe, player::Int, move::Int)
+    if game.board[move]==0
+        game.board[move] = player
+    else
+        throw("Error: Invalid Move: " * move * " on board: " * string(game.board))
     end
-    win_state(game)
+    game
 end
 
-function play_tic_tac_toe_track_state(player_1::Function, player_2::Function)
-    game = TicTacToe()
-    states = Array((TicTacToe, Int, Int), 0) # state, turn, move
-    turn = 1
-    while win_state(game)==0
-        move = turn==1 ? player_1(game, turn) : player_2(game, turn)
-        push!(states, (TicTacToe(copy(game.board)), turn, move))
-        if game.board[move]==0
-            game.board[move] = turn
-        else
-            throw("Error: Invalid Move: " * string(move) * " on board: " * string(game.board))
-        end
-        turn = 3 - turn # alternates between 1 and 2
-    end
-    states, win_state(game)
-end
-
-function play_tic_tac_toe_random_first_move(player_1::Function, player_2::Function)
-    if rand(1:2)==1
-        return play_tic_tac_toe(player_1, player_2)
-    end
-    res = play_tic_tac_toe(player_2, player_1)
-    res < 3 ? 3-res : res
-end
+play_tic_tac_toe(player_1::Function, player_2::Function) = play_game(TicTacToe, player_1, player_2)
+play_tic_tac_toe_random_first_move(player_1::Function, player_2::Function) = play_game_random_first_move(TicTacToe, player_1, player_2)
+play_tic_tac_toe_track_state(player_1::Function, player_2::Function) = play_game_track_state(TicTacToe, player_1, player_2)
 
 evaluate_tic_tac_toe_players(player_1::Function, player_2::Function, num_samples::Int) =
     evaluate_players(play_tic_tac_toe_random_first_move, player_1, player_2, num_samples)
@@ -170,8 +144,6 @@ function game_to_input_features(game::TicTacToe, player::Int, move::Int)
     fea[find(game.board.==player)] = 1
     fea[find(game.board.==3-player)+9] = 1
     fea[move] = 1
-    #fea[19] = player==1 ? 1:0
-    #fea[(player==1 ? 0 : 9) + move] = 1
     fea
 end
 
@@ -197,8 +169,4 @@ function plot_tic_tac_toe_neuron(weights::Vector{Float64})
           xgroup=:Cols,
           ygroup=:Rows,
           Geom.subplot_grid(Geom.bar))
-end
-
-function plot_tic_tac_toe_neurons(net::NeuralNet)
-
 end
