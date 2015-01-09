@@ -11,7 +11,7 @@ println("Num Games:     ", num_games)
 
 @time q_net, q_net_player = train_q_net_player(play_tic_tac_toe_track_state,
                                                18,
-                                               [random_player, perfect_player],
+                                               [random_player],
                                                num_games=num_games,
                                                net_options=regression_net_options(hidden_layers=hidden_layers,
                                                                                   regularization_factor=0.0,

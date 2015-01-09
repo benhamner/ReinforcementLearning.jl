@@ -1,7 +1,7 @@
 using MachineLearning
 using ReinforcementLearning
 
-hidden_layers = [200]
+hidden_layers = [100]
 learning_rate = 500.0
 num_games     = 500_000
 
