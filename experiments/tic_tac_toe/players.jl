@@ -12,7 +12,7 @@ println("Num Games:     ", num_games)
 
 res = DataFrame(Name=[], Opponent=[], Iteration=[], WinPercentage=[], DrawPercentage=[], LossPercentage=[])
 iterations=50
-players = Vector{Function}[[], [random_player], [random_player, perfect_player], [perfect_player]]
+players = Vector{Function}[[], [random_player], [random_player], [random_player, perfect_player], [perfect_player]]
 player_names = ["Self", "Rand", "Rand+Self", "Rand+Perf+Self", "Perf+Self"]
 play_self = [true, false, true, true, true]
 for i=1:iterations
