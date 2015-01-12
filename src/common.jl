@@ -67,13 +67,19 @@ function train_q_net_player(play_game_function,
                             num_features,
                             players::Vector{Function};
                             num_games=10_000,
-                            net_options=regression_net_options(regularization_factor=0.0))
+                            net_options=regression_net_options(regularization_factor=0.0),
+                            self_play::Bool=true)
+    if !self_play && length(players)==0
+        throw("Need to have at least one game player")
+    end
     net = initialize_regression_net(net_options, num_features)
     temp = initialize_neural_net_temporary(net)
 
     q_net_player = make_q_net_player(net)
     possible_players = copy(players)
-    push!(possible_players, q_net_player)
+    if self_play
+        push!(possible_players, q_net_player)
+    end
     alpha = 0.5
     for i=1:num_games
         player_1 = rand(possible_players)

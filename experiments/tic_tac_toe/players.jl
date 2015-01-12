@@ -12,8 +12,9 @@ println("Num Games:     ", num_games)
 
 res = DataFrame(Name=[], Opponent=[], Iteration=[], WinPercentage=[], DrawPercentage=[], LossPercentage=[])
 iterations=50
-players = Vector{Function}[[random_player], [random_player, perfect_player], [perfect_player]]
-player_names = ["Rand", "Rand+Perf", "Perf"]
+players = Vector{Function}[[], [random_player], [random_player, perfect_player], [perfect_player]]
+player_names = ["Self", "Rand", "Rand+Self", "Rand+Perf+Self", "Perf+Self"]
+play_self = [true, false, true, true, true]
 for i=1:iterations
     for j=1:length(players)
         q_net, q_net_player = train_q_net_player(play_tic_tac_toe_track_state,
@@ -22,7 +23,8 @@ for i=1:iterations
                                                num_games=num_games,
                                                net_options=regression_net_options(hidden_layers=hidden_layers,
                                                                                   regularization_factor=0.0,
-                                                                                  learning_rate=learning_rate))
+                                                                                  learning_rate=learning_rate),
+                                               self_play=play_self[j])
         win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac_toe_players(q_net_player, random_player, 2_000)
         res = vcat(res, DataFrame(Name=player_names[j], Opponent="Rand", Iteration=i, WinPercentage=win_percentage, DrawPercentage=draw_percentage, LossPercentage=loss_percentage))
         println("qnet v rand: ", results_txt)
