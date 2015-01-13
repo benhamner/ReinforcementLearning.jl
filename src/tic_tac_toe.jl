@@ -121,6 +121,7 @@ function learn_from_states!(q_table::DefaultDict{(TicTacToe,Int,Int), Float64}, 
 end
 
 function train_q_learning_player(players::Vector{Function};
+                                 num_games::Int=10_000,
                                  self_play::Bool=true)
     if !self_play && length(players)==0
         throw("Need to have at least one game player")
@@ -134,8 +135,7 @@ function train_q_learning_player(players::Vector{Function};
         push!(possible_players, q_player)
     end
 
-    alpha = 0.1
-    num_games = 10_000
+    alpha = 0.5
     for i=1:num_games
         player_1 = rand(possible_players)
         player_2 = rand(possible_players)
