@@ -24,9 +24,9 @@ train_functions = vcat([() -> train_q_net_player(play_tic_tac_toe_track_state,
                                                                                     regularization_factor=0.0,
                                                                                     learning_rate=learning_rate),
                                                  self_play=play_self[i]) for i=1:length(base_players)],
-                       [() -> train_q_player(base_players[i],
-                                             num_games=num_games,
-                                             self_play=play_self[i]) for i=1:length(base_players)])
+                       [() -> train_q_learning_player(base_players[i],
+                                                      num_games=num_games,
+                                                      self_play=play_self[i]) for i=1:length(base_players)])
 player_names = vcat(base_player_names, ["Q"*n for n=base_player_names])
 
 for i=1:iterations
