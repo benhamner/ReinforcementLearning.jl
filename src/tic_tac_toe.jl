@@ -120,14 +120,25 @@ function learn_from_states!(q_table::DefaultDict{(TicTacToe,Int,Int), Float64}, 
     q_table[states[end]] = (1-alpha)*q_table[states[end]]+alpha*reward
 end
 
-function train_q_learning_player()
+function train_q_learning_player(players::Vector{Function};
+                                 self_play::Bool=true)
+    if !self_play && length(players)==0
+        throw("Need to have at least one game player")
+    end
+    
     q_table = DefaultDict((TicTacToe,Int,Int), Float64, 0.0)
     q_player = make_q_player(q_table)
+    
+    possible_players = copy(players)
+    if self_play
+        push!(possible_players, q_player)
+    end
+
     alpha = 0.1
     num_games = 10_000
     for i=1:num_games
-        player_1 = rand([q_player, random_player, perfect_player])
-        player_2 = rand([q_player, random_player, perfect_player])
+        player_1 = rand(possible_players)
+        player_2 = rand(possible_players)
         states, win_state = play_tic_tac_toe_track_state(player_1, player_2)
         
         # Learn from player 1

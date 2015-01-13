@@ -64,7 +64,7 @@ win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac
 @test win_percentage*100/(win_percentage+loss_percentage) > 55.0
 println("Perfct vs random: ", results_txt)
 
-q_table, q_player = train_q_learning_player()
+q_table, q_player = train_q_learning_player([random_player, perfect_player])
 win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac_toe_players(q_player, random_player, 10_000)
 @test win_percentage*100/(win_percentage+loss_percentage) > 75.0
 println("Q player vs random: ", results_txt)
