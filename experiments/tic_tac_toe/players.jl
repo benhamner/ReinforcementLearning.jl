@@ -30,8 +30,9 @@ train_functions = vcat([() -> train_q_net_player(play_tic_tac_toe_track_state,
 player_names = vcat(base_player_names, ["Q"*n for n=base_player_names])
 
 for i=1:iterations
+    println("Iteration: ", i)
     for j=1:length(train_functions)
-        q, q_player = train_functions[i]()
+        q, q_player = train_functions[j]()
         win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac_toe_players(q_player, random_player, 2_000)
         res = vcat(res, DataFrame(Name=player_names[j], Opponent="Rand", Iteration=i, WinPercentage=win_percentage, DrawPercentage=draw_percentage, LossPercentage=loss_percentage))
         println("qnet v rand: ", results_txt)
