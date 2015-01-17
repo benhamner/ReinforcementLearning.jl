@@ -68,7 +68,8 @@ function train_q_net_player(play_game_function,
                             players::Vector{Function};
                             num_games=10_000,
                             net_options=regression_net_options(regularization_factor=0.0),
-                            self_play::Bool=true)
+                            self_play::Bool=true,
+                            alpha::Float64=0.5)
     if !self_play && length(players)==0
         throw("Need to have at least one game player")
     end
@@ -80,7 +81,7 @@ function train_q_net_player(play_game_function,
     if self_play
         push!(possible_players, q_net_player)
     end
-    alpha = 0.5
+    
     for i=1:num_games
         player_1 = rand(possible_players)
         player_2 = rand(possible_players)
