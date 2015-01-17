@@ -50,6 +50,6 @@ for i=1:iterations
     draw(PNG("plots/players_vrand_scatter.png", 8inch, 6inch), plot(res[res[:Opponent].=="Rand",:], x=:WinPercentage, y=:DrawPercentage, color=:Name, Geom.point))
     draw(PNG("plots/players_vlh1.png", 8inch, 6inch), plot(stacked_lh1, x=:Name, y=:Score, color=:Group, Geom.boxplot))
     draw(PNG("plots/players_vlh1_scatter.png", 8inch, 6inch), plot(res[res[:Opponent].=="LH1",:], x=:DrawPercentage, y=:LossPercentage, color=:Name, Geom.point))
-    draw(PNG("plots/players_vlh2.png", 8inch, 6inch), plot(stacked_lh1, x=:Name, y=:Score, color=:Group, Geom.boxplot))
+    draw(PNG("plots/players_vlh2.png", 8inch, 6inch), plot(stacked_lh2, x=:Name, y=:Score, color=:Group, Geom.boxplot))
     draw(PNG("plots/players_vlh2_scatter.png", 8inch, 6inch), plot(res[res[:Opponent].=="LH2",:], x=:DrawPercentage, y=:LossPercentage, color=:Name, Geom.point))
 end
