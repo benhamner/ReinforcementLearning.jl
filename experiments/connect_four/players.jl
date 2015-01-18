@@ -16,15 +16,25 @@ base_players = Vector{Function}[[], [random_player], [random_player], [random_pl
 base_player_names = ["Self", "Rand", "Rand+Self", "Rand+Self+LH1"]
 play_self = [true, false, true, true]
 
-train_functions = [() -> train_q_net_player(play_connect_four_track_state,
-                                            84,
-                                            base_players[i],
-                                            num_games=num_games,
-                                            net_options=regression_net_options(hidden_layers=hidden_layers,
-                                                                               regularization_factor=0.0,
-                                                                               learning_rate=learning_rate),
-                                            self_play=play_self[i]) for i=1:length(base_players)]
-player_names = base_player_names
+train_functions = vcat([() -> train_q_net_player(play_connect_four_track_state,
+                                                 84,
+                                                 base_players[i],
+                                                 num_games=num_games,
+                                                 net_options=regression_net_options(hidden_layers=hidden_layers,
+                                                                                    regularization_factor=0.0,
+                                                                                    learning_rate=learning_rate),
+                                                 self_play=play_self[i],
+                                                 alpha=0.5) for i=1:length(base_players)],
+                       [() -> train_q_net_player(play_connect_four_track_state,
+                                                 84,
+                                                 base_players[i],
+                                                 num_games=num_games,
+                                                 net_options=regression_net_options(hidden_layers=hidden_layers,
+                                                                                    regularization_factor=0.0,
+                                                                                    learning_rate=learning_rate),
+                                                 self_play=play_self[i],
+                                                 alpha=0.1) for i=1:length(base_players)])
+player_names = vcat(["A0.5"*n for n=base_player_names],["A0.1"*n for n=base_player_names])
 
 for i=1:iterations
     println("Iteration: ", i)
