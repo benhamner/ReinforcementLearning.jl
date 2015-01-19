@@ -9,6 +9,7 @@ module ReinforcementLearning
         center_player,
         command_player,
         ConnectFour,
+        compare_players,
         evaluate_board,
         evaluate_players,
         evaluate_tic_tac_toe_players,

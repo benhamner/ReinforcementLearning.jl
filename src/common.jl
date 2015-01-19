@@ -81,7 +81,7 @@ function train_q_net_player(play_game_function,
     if self_play
         push!(possible_players, q_net_player)
     end
-    
+
     for i=1:num_games
         player_1 = rand(possible_players)
         player_2 = rand(possible_players)
@@ -109,4 +109,34 @@ function evaluate_players(game_function::Function, player_1::Function, player_2:
     loss_percentage = (num_samples-wins-draws) / num_samples * 100
     results_text = @sprintf("%2.2f%% wins, %2.2f%% losses, %2.2f%% draws, %2.2f%% relative wins", win_percentage, loss_percentage, draw_percentage, wins/(num_samples-draws)*100.0)
     win_percentage, draw_percentage, loss_percentage, results_text
+end
+
+function compare_players(train_functions::Vector{Function},
+                         train_function_names,
+                         evaluation_opponents::Vector{Function},
+                         evaluation_opponent_names,
+                         evaluate_players::Function;
+                         num_iterations::Int=10,
+                         num_test_games::Int=1_000,
+                         plot_dir::ASCIIString="")
+    res = DataFrame(Name=[], Opponent=[], Iteration=[], WinPercentage=[], DrawPercentage=[], LossPercentage=[])
+    for iteration=1:num_iterations
+        println("Iteration: ", iteration)
+        for i_train_function=1:length(train_functions)
+            q, q_player = train_functions[i_train_function]()
+            for i_opponent = 1:length(evaluation_opponents)
+                win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_players(q_player, evaluation_opponents[i_opponent], num_test_games)
+                opponent_name = evaluation_opponent_names[i_opponent]
+                res = vcat(res, DataFrame(Name=train_function_names[i_train_function], Opponent=opponent_name, Iteration=iteration, WinPercentage=win_percentage, DrawPercentage=draw_percentage, LossPercentage=loss_percentage))
+                println("qnet v ", opponent_name, ": ", results_txt)
+            end
+        end
+        for i_opponent = 1:length(evaluation_opponents)
+            opponent_name = evaluation_opponent_names[i_opponent]
+            stacked = DataFrames.stack(res[res[:Opponent].==opponent_name,:], [:WinPercentage, :DrawPercentage, :LossPercentage])
+            rename!(stacked, [:variable, :value], [:Group, :Score])
+            draw(PNG(joinpath(plot_dir, @sprintf("players_v%s.png", opponent_name)), 8inch, 6inch), plot(stacked, x=:Name, y=:Score, color=:Group, Geom.boxplot))
+            draw(PNG(joinpath(plot_dir, @sprintf("players_v%s_scatter.png", opponent_name)), 8inch, 6inch), plot(res[res[:Opponent].==opponent_name,:], x=:WinPercentage, y=:DrawPercentage, color=:Name, Geom.point))
+        end
+    end
 end
