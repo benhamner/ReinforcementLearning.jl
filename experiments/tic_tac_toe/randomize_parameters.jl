@@ -2,13 +2,13 @@ using Gadfly
 using MachineLearning
 using ReinforcementLearning
 
-num_trials = 100
+num_trials = 100_000
 
-hidden_layers  = Vector{Int}[[5], [10], [25], [50], [100], [200], [10,10], [25,25], [25,10]]
+hidden_layers  = Vector{Int}[[5], [10], [25], [50], [100], [200], [10,10], [25,25], [25,10], [50,50], [100,10]]
 learning_rates = vcat([[1,2,5].*10.0^x for x=-5:5]...)
-num_games      = [1_000, 2_000, 5_000, 10_000, 20_000]
-alphas         = [0.1:0.1:1.0]
-num_test_games = 1_000
+num_games      = [1_000, 2_000, 5_000, 10_000, 20_000, 50_000]
+alphas         = [0.05:0.05:1.0]
+num_test_games = 2_000
 
 base_players = Vector{Function}[[], [random_player], [random_player], [random_player, perfect_player], [perfect_player]]
 base_player_names = ["Self", "Rand", "Rand+Self", "Rand+Perf+Self", "Perf+Self"]
@@ -33,6 +33,7 @@ for i_trial=1:num_trials
     learning_rate = rand(learning_rates)
     games         = rand(num_games)
     alpha         = rand(alphas)
+    println("--Layers: ", layers, ", LRate: ", learning_rate, "\n--Games: ", games, ", Alpha: ", alpha)
 
     q, q_player = train_q_net_player(play_tic_tac_toe_track_state,
                                      18,

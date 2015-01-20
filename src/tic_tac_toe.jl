@@ -35,6 +35,11 @@ possible_moves(game::TicTacToe) = find(game.board.==0)
 center_player(game::TicTacToe, player::Int) = game.board[5]==0 ? 5 : random_player(game, player)
 
 function move!(game::TicTacToe, player::Int, move::Int)
+    if move<1 || move > 9
+        println("Invalid move: ", move)
+        println(game)
+        println("Player: ", player)
+    end
     if game.board[move]==0
         game.board[move] = player
     else

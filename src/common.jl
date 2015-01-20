@@ -38,8 +38,9 @@ end
 function make_q_net_player(net::RegressionNet)
     function q_net_player(game, player::Int)
         max_score = -Inf
-        best_move = -1
-        for move=possible_moves(game)
+        moves = possible_moves(game)
+        best_move = moves[1]
+        for move=moves
             score = predict(net, game_to_input_features(game, player, move))
             if score>max_score
                 max_score = score
