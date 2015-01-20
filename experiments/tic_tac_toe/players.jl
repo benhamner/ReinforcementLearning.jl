@@ -29,23 +29,14 @@ train_functions = vcat([() -> train_q_net_player(play_tic_tac_toe_track_state,
                                                       self_play=play_self[i]) for i=1:length(base_players)])
 player_names = vcat(base_player_names, ["Q"*n for n=base_player_names])
 
-for i=1:iterations
-    println("Iteration: ", i)
-    for j=1:length(train_functions)
-        q, q_player = train_functions[j]()
-        win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac_toe_players(q_player, random_player, 2_000)
-        res = vcat(res, DataFrame(Name=player_names[j], Opponent="Rand", Iteration=i, WinPercentage=win_percentage, DrawPercentage=draw_percentage, LossPercentage=loss_percentage))
-        println("qnet v rand: ", results_txt)
-        win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_tic_tac_toe_players(q_player, perfect_player, 2_000)
-        res = vcat(res, DataFrame(Name=player_names[j], Opponent="Perf", Iteration=i, WinPercentage=win_percentage, DrawPercentage=draw_percentage, LossPercentage=loss_percentage))
-        println("qnet v perf: ", results_txt)
-    end
-    stacked_rand = stack(res[res[:Opponent].=="Rand",:], [:WinPercentage, :DrawPercentage, :LossPercentage])
-    rename!(stacked_rand, [:variable, :value], [:Group, :Score])
-    stacked_perf = stack(res[res[:Opponent].=="Perf",:], [:WinPercentage, :DrawPercentage, :LossPercentage])
-    rename!(stacked_perf, [:variable, :value], [:Group, :Score])
-    draw(PNG("plots/players_vrand.png", 8inch, 6inch), plot(stacked_rand, x=:Name, y=:Score, color=:Group, Geom.boxplot))
-    draw(PNG("plots/players_vrand_scatter.png", 8inch, 6inch), plot(res[res[:Opponent].=="Rand",:], x=:WinPercentage, y=:DrawPercentage, color=:Name, Geom.point))
-    draw(PNG("plots/players_vperf.png", 8inch, 6inch), plot(stacked_perf, x=:Name, y=:Score, color=:Group, Geom.boxplot))
-    draw(PNG("plots/players_vperf_scatter.png", 8inch, 6inch), plot(res[res[:Opponent].=="Perf",:], x=:DrawPercentage, y=:LossPercentage, color=:Name, Geom.point))
-end
+evaluation_opponents = [random_player, perfect_player]
+evaluation_opponent_names = ["rand", "perf"]
+
+compare_players(train_functions,
+                player_names,
+                evaluation_opponents,
+                evaluation_opponent_names,
+                evaluate_tic_tac_toe_players,
+                num_iterations=10,
+                num_test_games=1_000,
+                plot_dir="plots")
