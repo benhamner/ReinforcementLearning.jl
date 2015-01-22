@@ -6,6 +6,7 @@ module ReinforcementLearning
         MachineLearning
 
     export
+        board_to_string,
         center_player,
         command_player,
         ConnectFour,
