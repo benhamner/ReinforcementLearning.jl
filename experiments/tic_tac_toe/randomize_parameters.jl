@@ -9,6 +9,7 @@ learning_rates = vcat([[1,2,5].*10.0^x for x=-5:5]...)
 num_games      = [1_000, 2_000, 5_000, 10_000, 20_000, 50_000]
 alphas         = [0.05:0.05:1.0]
 num_test_games = 2_000
+regularization_factors = [0.0:0.01:1.0]
 
 base_players = Vector{Function}[[], [random_player], [random_player], [random_player, perfect_player], [perfect_player]]
 base_player_names = ["Self", "Rand", "Rand+Self", "Rand+Perf+Self", "Perf+Self"]
@@ -20,6 +21,7 @@ evaluation_opponent_names = ["rand", "perf"]
 res = DataFrame(Opponent=[],
                 HiddenLayer=[],
                 LearningRates=[],
+                RegularizationFactor=[],
                 NumGames=[],
                 Alpha=[],
                 Trial=[],
@@ -33,6 +35,7 @@ for i_trial=1:num_trials
     learning_rate = rand(learning_rates)
     games         = rand(num_games)
     alpha         = rand(alphas)
+    regularization_factor = rand(regularization_factors)
     println("--Layers: ", layers, ", LRate: ", learning_rate, "\n--Games: ", games, ", Alpha: ", alpha)
 
     q, q_player = train_q_net_player(play_tic_tac_toe_track_state,
@@ -40,7 +43,7 @@ for i_trial=1:num_trials
                                      [random_player],
                                      num_games=games,
                                      net_options=regression_net_options(hidden_layers=layers,
-                                                                        regularization_factor=0.0,
+                                                                        regularization_factor=regularization_factor,
                                                                         learning_rate=learning_rate),
                                      self_play=true,
                                      alpha = alpha)
@@ -50,6 +53,7 @@ for i_trial=1:num_trials
         res = vcat(res, DataFrame(Opponent=[opponent_name],
                                   HiddenLayer=Vector{Int}[layers],
                                   LearningRates=[learning_rate],
+                                  RegularizationFactor=[regularization_factor],
                                   NumGames=[games],
                                   Alpha=[alpha],
                                   Trial=[i_trial],

@@ -7,11 +7,21 @@ d = d[d[:Opponent].=="rand",:]
 d[:LearningRates] = log10(d[:LearningRates])
 delete!(d, :LossPercentage)
 delete!(d, :DrawPercentage)
-println(d)
-draw(PNG("plots/randomize_parameters_importances_rf.png", 8inch, 6inch), plot(importances(d, :WinPercentage, regression_forest_options())))
-draw(PNG("plots/randomize_parameters_partial_learning_rate_rf.png", 8inch, 6inch), plot(partials(d, :WinPercentage, :LearningRates, regression_forest_options())))
-draw(PNG("plots/randomize_parameters_partial_num_games_rf.png", 8inch, 6inch), plot(partials(d, :WinPercentage, :NumGames, regression_forest_options())))
+d[:HiddenLayer] = [eval(parse(l)) for l=d[:HiddenLayer]]
+d[:NumHiddenLayers] = [float(length(l)) for l = d[:HiddenLayer]]
+d[:SizeFirstLayer] = [float(l[1]) for l = d[:HiddenLayer]]
+println(d[1:10,:])
+delete!(d, :HiddenLayer)
+delete!(d, :Opponent)
 
-draw(PNG("plots/randomize_parameters_importances_bart.png", 8inch, 6inch), plot(importances(d, :WinPercentage, bart_options())))
-draw(PNG("plots/randomize_parameters_partial_learning_rate_bart.png", 8inch, 6inch), plot(partials(d, :WinPercentage, :LearningRates, bart_options())))
-draw(PNG("plots/randomize_parameters_partial_num_games_bart.png", 8inch, 6inch), plot(partials(d, :WinPercentage, :NumGames, bart_options())))
+features = filter(n -> n!=:WinPercentage, names(d))
+println(features)
+
+draw(PNG("plots/partials/randomize_parameters_importances_rf.png", 8inch, 6inch), plot(importances(d, :WinPercentage, regression_forest_options())))
+draw(PNG("plots/partials/randomize_parameters_importances_bart.png", 8inch, 6inch), plot(importances(d, :WinPercentage, bart_options())))
+
+for f = features
+    draw(PNG(@sprintf("plots/partials/randomize_parameters_partial_%s_rf.png", f), 8inch, 6inch), plot(partials(d, :WinPercentage, f, regression_forest_options())))
+    draw(PNG(@sprintf("plots/partials/randomize_parameters_partial_%s_bart.png", f), 8inch, 6inch), plot(partials(d, :WinPercentage, f, bart_options())))
+end
+
