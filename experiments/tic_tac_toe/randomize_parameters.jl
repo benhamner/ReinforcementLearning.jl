@@ -9,7 +9,7 @@ learning_rates = vcat([[1,2,5].*10.0^x for x=-5:5]...)
 num_games      = [1_000, 2_000, 5_000, 10_000, 20_000, 50_000]
 alphas         = [0.05:0.05:1.0]
 num_test_games = 2_000
-regularization_factors = [0.0:0.01:1.0]
+regularization_factors = vcat(0.0, vcat([[1,2,5].*10.0^x for x=-3:0]...))
 
 base_players = Vector{Function}[[], [random_player], [random_player], [random_player, perfect_player], [perfect_player]]
 base_player_names = ["Self", "Rand", "Rand+Self", "Rand+Perf+Self", "Perf+Self"]

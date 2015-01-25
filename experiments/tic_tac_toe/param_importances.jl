@@ -9,7 +9,7 @@ delete!(d, :LossPercentage)
 delete!(d, :DrawPercentage)
 d[:HiddenLayer] = [eval(parse(l)) for l=d[:HiddenLayer]]
 d[:NumHiddenLayers] = [float(length(l)) for l = d[:HiddenLayer]]
-d[:SizeFirstLayer] = [float(l[1]) for l = d[:HiddenLayer]]
+d[:NumHiddenUnits] = [float(sum(l)) for l = d[:HiddenLayer]]
 println(d[1:10,:])
 delete!(d, :HiddenLayer)
 delete!(d, :Opponent)
@@ -17,8 +17,11 @@ delete!(d, :Opponent)
 features = filter(n -> n!=:WinPercentage, names(d))
 println(features)
 
-draw(PNG("plots/partials/randomize_parameters_importances_rf.png", 8inch, 6inch), plot(importances(d, :WinPercentage, regression_forest_options())))
-draw(PNG("plots/partials/randomize_parameters_importances_bart.png", 8inch, 6inch), plot(importances(d, :WinPercentage, bart_options())))
+draw(PNG("plots/partials/randomize_parameters_importances_rf.png",   8inch, 6inch), plot(importances(d, :WinPercentage, regression_forest_options())))
+draw(PNG("plots/partials/randomize_parameters_importances_bart.png", 8inch, 6inch), plot(importances(d, :WinPercentage, bart_options()))) 
+
+draw(PNG("plots/partials/randomize_parameters_sensitivities_rf.png",   8inch, 6inch), plot(sensitivities(d, :WinPercentage, regression_forest_options())))
+draw(PNG("plots/partials/randomize_parameters_sensitivities_bart.png", 8inch, 6inch), plot(sensitivities(d, :WinPercentage, bart_options())))
 
 for f = features
     draw(PNG(@sprintf("plots/partials/randomize_parameters_partial_%s_rf.png", f), 8inch, 6inch), plot(partials(d, :WinPercentage, f, regression_forest_options())))
