@@ -27,4 +27,3 @@ for f = features
     draw(PNG(@sprintf("plots/partials/randomize_parameters_partial_%s_rf.png", f), 8inch, 6inch), plot(partials(d, :WinPercentage, f, regression_forest_options())))
     draw(PNG(@sprintf("plots/partials/randomize_parameters_partial_%s_bart.png", f), 8inch, 6inch), plot(partials(d, :WinPercentage, f, bart_options())))
 end
-

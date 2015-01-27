@@ -12,7 +12,7 @@ num_test_games = 200
 regularization_factors = vcat(0.0, vcat([[1,2,5].*10.0^x for x=-3:0]...))
 
 evaluation_opponents = [random_player, make_lookahead_player(1), make_lookahead_player(2)]
-evaluation_opponent_names = ["rand", "lh1", "lh2"]
+evaluation_opponent_names = ["rand", "lh1", "lh2", "self"]
 
 res = DataFrame(Opponent=[],
                 HiddenLayer=[],
@@ -43,8 +43,9 @@ for i_trial=1:num_trials
                                                                         learning_rate=learning_rate),
                                      self_play=true,
                                      alpha = alpha)
-    for i_opponent = 1:length(evaluation_opponents)
-        win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(q_player, evaluation_opponents[i_opponent], num_test_games)
+    evaluation_opponents_temp = vcat(evaluation_opponents, q_player)
+    for i_opponent = 1:length(evaluation_opponents_temp)
+        win_percentage, draw_percentage, loss_percentage, results_txt = evaluate_connect_four_players(q_player, evaluation_opponents_temp[i_opponent], num_test_games)
         opponent_name = evaluation_opponent_names[i_opponent]
         res = vcat(res, DataFrame(Opponent=[opponent_name],
                                   HiddenLayer=Vector{Int}[layers],
@@ -58,6 +59,7 @@ for i_trial=1:num_trials
                                   LossPercentage=[loss_percentage]))
     end
     writetable("plots/randomize_parameters.csv", res)
+    println(aggregate(res[:, [:Opponent, :WinPercentage, :DrawPercentage]], :Opponent, maximum))
 end
 
 println(res)
